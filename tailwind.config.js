@@ -7,6 +7,13 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        'financier': ['var(--font-financier)'],
+        'soehne': ['var(--font-soehne)'],
+        'mono': ['var(--font-mono)'],
+        'sans': ['var(--font-soehne)'],
+        'serif': ['var(--font-financier)'],
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
