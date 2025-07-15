@@ -40,10 +40,10 @@ const setToLocalStorage = (key: string, value: any) => {
 
 export function Hero() {
   const [ownershipPercentage, setOwnershipPercentage] = useState<number>(() => 
-    getFromLocalStorage('qsbs-ownership-percentage', 100)
+    getFromLocalStorage('qsbs-ownership-percentage', 25)
   )
   const [exitValue, setExitValue] = useState<string>(() => 
-    getFromLocalStorage('qsbs-exit-value', '10000000')
+    getFromLocalStorage('qsbs-exit-value', '100000000')
   )
 
   const [selectedProvince, setSelectedProvince] = useState<string>(() => 
