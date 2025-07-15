@@ -31,13 +31,24 @@ export const CurrencyNumber = ({
   
   const fontClass = fontFamily === 'soehne' ? 'font-soehne' : 'font-mono'
   
+  // Extract specific color value from className
+  const getColorFromClassName = (className: string) => {
+    if (className.includes('text-red-600')) return '#dc2626'
+    if (className.includes('text-green-600')) return '#16a34a'
+    if (className.includes('text-blue-600')) return '#2563eb'
+    return null
+  }
+  
+  const specificColor = getColorFromClassName(className)
+  const colorStyle = specificColor ? { color: specificColor } : { color: 'inherit' }
+  
   if (currencyAfter) {
     return (
       <span 
         className={`${fontClass} ${className}`}
         style={{ 
           fontVariantNumeric: 'tabular-nums',
-          color: 'inherit' 
+          ...colorStyle
         }}
       >
         <NumberFlow 
@@ -52,9 +63,9 @@ export const CurrencyNumber = ({
           transformTiming={{ duration: 300, easing: 'ease-out' }}
           spinTiming={{ duration: 200, easing: 'ease-out' }}
           opacityTiming={{ duration: 150, easing: 'ease-out' }}
-          style={{ color: 'inherit' }}
+          style={colorStyle}
         />
-        <span style={{ color: 'inherit' }}> {currency}</span>
+        <span style={colorStyle}> {currency}</span>
       </span>
     )
   } else {
@@ -63,10 +74,10 @@ export const CurrencyNumber = ({
         className={`${fontClass} ${className}`}
         style={{ 
           fontVariantNumeric: 'tabular-nums',
-          color: 'inherit' 
+          ...colorStyle
         }}
       >
-        <span style={{ color: 'inherit' }}>{currency} </span>
+        <span style={colorStyle}>{currency} </span>
         <NumberFlow 
           value={Math.abs(value)} 
           prefix={numberPrefix}
@@ -79,7 +90,7 @@ export const CurrencyNumber = ({
           transformTiming={{ duration: 300, easing: 'ease-out' }}
           spinTiming={{ duration: 200, easing: 'ease-out' }}
           opacityTiming={{ duration: 150, easing: 'ease-out' }}
-          style={{ color: 'inherit' }}
+          style={colorStyle}
         />
       </span>
     )

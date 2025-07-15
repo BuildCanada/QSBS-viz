@@ -7,6 +7,7 @@ import { calculateQSBS, US_STATES } from '@/lib/qsbs'
 import { calculateLCGE, PROVINCES } from '@/lib/lcge'
 import { HelpCircle } from 'lucide-react'
 import { Tooltip } from "@/components/ui/tooltip"
+import { NumericFormat } from 'react-number-format'
 import {
   Select,
   SelectContent,
@@ -26,7 +27,6 @@ export function Hero() {
 
   const stateTextRef = useRef<HTMLSpanElement>(null)
   const provinceTextRef = useRef<HTMLSpanElement>(null)
-  const exitValueInputRef = useRef<HTMLInputElement>(null)
   const [stateTextWidth, setStateTextWidth] = useState<number>(100) // fallback width
   const [provinceTextWidth, setProvinceTextWidth] = useState<number>(100) // fallback width
 
@@ -35,107 +35,8 @@ export function Hero() {
 
   // Helper function to safely parse numbers
   const parseNumber = (value: string): number => {
-    const num = parseFloat(value);
+    const num = parseFloat(value.replace(/,/g, ''));
     return isNaN(num) ? 0 : num;
-  }
-
-  // Helper function to format numbers with commas
-  const formatNumberWithCommas = (value: string): string => {
-    // Remove any non-numeric characters except decimal point
-    const numericValue = value.replace(/[^0-9.]/g, '');
-    if (!numericValue) return '';
-    
-    // Split on decimal point
-    const parts = numericValue.split('.');
-    const integerPart = parts[0];
-    const decimalPart = parts[1];
-    
-    // Add commas to integer part
-    const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    
-    // Reassemble with decimal part if it exists
-    return decimalPart !== undefined ? `${formattedInteger}.${decimalPart}` : formattedInteger;
-  }
-
-  // Helper function to remove commas from input
-  const removeCommas = (value: string): string => {
-    return value.replace(/,/g, '');
-  }
-
-  // Input validation for numeric fields
-  const handleNumericKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    // Allow: backspace, delete, tab, escape, enter, decimal point, comma
-    if ([8, 9, 27, 13, 46, 110, 190, 188].indexOf(e.keyCode) !== -1 ||
-        // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X, Ctrl+Z
-        (e.keyCode === 65 && e.ctrlKey) ||
-        (e.keyCode === 67 && e.ctrlKey) ||
-        (e.keyCode === 86 && e.ctrlKey) ||
-        (e.keyCode === 88 && e.ctrlKey) ||
-        (e.keyCode === 90 && e.ctrlKey) ||
-        // Allow: home, end, left, right, down, up
-        (e.keyCode >= 35 && e.keyCode <= 40)) {
-      return;
-    }
-    // Ensure that it is a number and stop the keypress
-    if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
-      e.preventDefault();
-    }
-  }
-
-  const handleNumericInput = (value: string, setter: (value: string) => void, inputRef?: React.RefObject<HTMLInputElement | null>) => {
-    // Store cursor position before processing
-    const currentCursorPosition = inputRef?.current?.selectionStart || 0;
-    const oldFormattedValue = inputRef?.current?.value || '';
-    
-    // Remove commas first, then other non-numeric characters except decimal point
-    const withoutCommas = removeCommas(value);
-    const numericValue = withoutCommas.replace(/[^0-9.]/g, '');
-    
-    // Ensure only one decimal point
-    const parts = numericValue.split('.');
-    let cleanValue: string;
-    if (parts.length > 2) {
-      cleanValue = parts[0] + '.' + parts.slice(1).join('');
-    } else {
-      cleanValue = numericValue;
-    }
-    
-    setter(cleanValue);
-    
-    // Restore cursor position after React re-renders
-    if (inputRef?.current) {
-      setTimeout(() => {
-        if (inputRef.current) {
-          const newFormattedValue = formatNumberWithCommas(cleanValue);
-          
-          // Calculate new cursor position
-          // Count commas before cursor in old value
-          const textBeforeCursor = oldFormattedValue.substring(0, currentCursorPosition);
-          const commasBeforeCursor = (textBeforeCursor.match(/,/g) || []).length;
-          
-          // Remove commas from text before cursor to get the "raw" position
-          const rawTextBeforeCursor = textBeforeCursor.replace(/,/g, '');
-          
-          // In the new formatted value, find where this raw position should be
-          const newRawPosition = Math.min(rawTextBeforeCursor.length, removeCommas(newFormattedValue).length);
-          
-          // Count commas in the new formatted value up to this raw position
-          let newCursorPosition = 0;
-          let rawPositionCounter = 0;
-          
-          for (let i = 0; i < newFormattedValue.length && rawPositionCounter < newRawPosition; i++) {
-            if (newFormattedValue[i] === ',') {
-              newCursorPosition++;
-            } else {
-              newCursorPosition++;
-              rawPositionCounter++;
-            }
-          }
-          
-          inputRef.current.setSelectionRange(newCursorPosition, newCursorPosition);
-        }
-      }, 0);
-    }
   }
 
   const handlePercentageChange = (value: number) => {
@@ -348,18 +249,18 @@ export function Hero() {
                         />
                       </Tooltip>
                     </div>
-                    <input
-                      ref={exitValueInputRef}
-                      type="text"
-                      value={formatNumberWithCommas(exitValue)}
-                      onChange={(e) => handleNumericInput(e.target.value, setExitValue, exitValueInputRef)}
-                      onKeyDown={handleNumericKeyDown}
-                        className="w-full px-3 py-2 font-mono selection:bg-blue-500 selection:text-white focus:outline-none focus:ring-2 focus:ring-gray-500"
-                        style={{ 
-                          backgroundColor: 'rgba(245, 244, 252, 0.8)',
-                          border: '1px solid #28253B',
-                          color: '#28253B'
-                        }}
+                    <NumericFormat
+                      value={exitValue}
+                      onValueChange={(values) => setExitValue(values.value)}
+                      thousandSeparator={true}
+                      allowNegative={false}
+                      decimalScale={2}
+                      className="w-full px-3 py-2 font-mono selection:bg-blue-500 selection:text-white focus:outline-none focus:ring-2 focus:ring-gray-500"
+                      style={{ 
+                        backgroundColor: 'rgba(245, 244, 252, 0.8)',
+                        border: '1px solid #28253B',
+                        color: '#28253B'
+                      }}
                     />
                   </div>
                 </div>
