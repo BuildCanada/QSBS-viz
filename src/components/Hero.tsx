@@ -294,7 +294,8 @@ export function Hero() {
                     onChange={(e) => handlePercentageChange(parseInt(e.target.value))}
                     className="w-full h-2 bg-gray-200 appearance-none cursor-pointer slider"
                     style={{
-                      background: `linear-gradient(to right, #28253B 0%, #28253B ${ownershipPercentage}%, #C8B2DB ${ownershipPercentage}%, #C8B2DB 100%)`
+                      background: `linear-gradient(to right, #28253B 0%, #28253B ${ownershipPercentage}%, #C8B2DB ${ownershipPercentage}%, #C8B2DB 100%)`,
+                      borderRadius: '4px'
                     }}
                   />
                 </div>
