@@ -16,14 +16,48 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-export function Hero() {
-  const [ownershipPercentage, setOwnershipPercentage] = useState<number>(100)
-  const [exitValue, setExitValue] = useState<string>('10000000')
+// Helper function to safely get from localStorage
+const getFromLocalStorage = (key: string, defaultValue: any) => {
+  if (typeof window === 'undefined') return defaultValue;
+  try {
+    const item = window.localStorage.getItem(key);
+    return item ? JSON.parse(item) : defaultValue;
+  } catch (error) {
+    console.warn(`Error reading localStorage key "${key}":`, error);
+    return defaultValue;
+  }
+};
 
-  const [selectedProvince, setSelectedProvince] = useState<string>('ON')
-  const [selectedState, setSelectedState] = useState<string>('CA')
-  const [currency, setCurrency] = useState<'USD' | 'CAD'>('CAD')
-  const [previousCurrency, setPreviousCurrency] = useState<'USD' | 'CAD'>('CAD')
+// Helper function to safely set to localStorage
+const setToLocalStorage = (key: string, value: any) => {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  } catch (error) {
+    console.warn(`Error setting localStorage key "${key}":`, error);
+  }
+};
+
+export function Hero() {
+  const [ownershipPercentage, setOwnershipPercentage] = useState<number>(() => 
+    getFromLocalStorage('qsbs-ownership-percentage', 100)
+  )
+  const [exitValue, setExitValue] = useState<string>(() => 
+    getFromLocalStorage('qsbs-exit-value', '10000000')
+  )
+
+  const [selectedProvince, setSelectedProvince] = useState<string>(() => 
+    getFromLocalStorage('qsbs-selected-province', 'ON')
+  )
+  const [selectedState, setSelectedState] = useState<string>(() => 
+    getFromLocalStorage('qsbs-selected-state', 'CA')
+  )
+  const [currency, setCurrency] = useState<'USD' | 'CAD'>(() => 
+    getFromLocalStorage('qsbs-currency', 'CAD')
+  )
+  const [previousCurrency, setPreviousCurrency] = useState<'USD' | 'CAD'>(() => 
+    getFromLocalStorage('qsbs-currency', 'CAD')
+  )
 
   const stateTextRef = useRef<HTMLSpanElement>(null)
   const provinceTextRef = useRef<HTMLSpanElement>(null)
@@ -32,6 +66,27 @@ export function Hero() {
 
   // Exchange rate
   const USD_TO_CAD_RATE = 1.37;
+
+  // Save state to localStorage whenever values change
+  useEffect(() => {
+    setToLocalStorage('qsbs-ownership-percentage', ownershipPercentage);
+  }, [ownershipPercentage]);
+
+  useEffect(() => {
+    setToLocalStorage('qsbs-exit-value', exitValue);
+  }, [exitValue]);
+
+  useEffect(() => {
+    setToLocalStorage('qsbs-selected-province', selectedProvince);
+  }, [selectedProvince]);
+
+  useEffect(() => {
+    setToLocalStorage('qsbs-selected-state', selectedState);
+  }, [selectedState]);
+
+  useEffect(() => {
+    setToLocalStorage('qsbs-currency', currency);
+  }, [currency]);
 
   // Helper function to safely parse numbers
   const parseNumber = (value: string): number => {

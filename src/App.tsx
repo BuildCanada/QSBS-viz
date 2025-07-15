@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import { Hero } from './components/Hero'
 import { Nav } from './components/Nav'
-import { Info } from './components/Info'
+import { BlankSection } from './components/BlankSection'
 import { FontGuide } from './components/FontGuide'
 
 function HomePage() {
@@ -10,7 +10,7 @@ function HomePage() {
       <div className="p-5 flex flex-col gap-3">
         <Nav />
         <Hero />
-        <Info />
+        <BlankSection />
       </div>
     </div>
   )

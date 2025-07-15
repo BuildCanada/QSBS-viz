@@ -38,6 +38,16 @@ export const Nav: React.FC = () => {
             href="/" 
             aria-current="page" 
             className="flex items-center transition-opacity hover:opacity-80 p-4"
+            style={{
+              outline: 'none',
+              border: 'none',
+              userSelect: 'none',
+              WebkitUserSelect: 'none',
+              MozUserSelect: 'none',
+              msUserSelect: 'none',
+              WebkitTapHighlightColor: 'transparent',
+              touchAction: 'manipulation'
+            }}
           >
             <AnimatedLogo mousePosition={mousePosition} />
           </a>
