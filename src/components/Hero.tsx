@@ -5,6 +5,8 @@ import { CurrencyNumber } from "@/components/CurrencyNumber"
 import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { calculateQSBS, US_STATES } from '@/lib/qsbs'
 import { calculateLCGE, PROVINCES } from '@/lib/lcge'
+import { HelpCircle } from 'lucide-react'
+import { Tooltip } from "@/components/ui/tooltip"
 import {
   Select,
   SelectContent,
@@ -192,13 +194,13 @@ export function Hero() {
                   How startup exits are taxed in Canada and the USA
                 </p>
                 <p className="text-base font-financier text-gray-800 leading-tight">
-                  The conventional wisdom has always been: 'If you want to swing big, go to America—you'll be rewarded.' This belief has driven Canada's most ambitious entrepreneurs to leave in droves, chasing the American dream. But here's the twist: the economics of a big swing have long favored staying in Canada. Thanks to the way our capital gains taxes are constructed, mathematically speaking, there are many scenarios where Canadian founders walk away with more after a huge exit than their American peers. We built a calculator to show you exactly how. The results might surprise you.
+                  The conventional wisdom has always been: "If you want to swing big, go to America—you'll be rewarded." This belief has driven Canada's most ambitious entrepreneurs to leave in droves, chasing the American dream. But here's the twist: the economics of a big swing have long favored staying in Canada. Thanks to the way our capital gains taxes are constructed, mathematically speaking, there are many scenarios where Canadian founders walk away with more after a huge exit than their American peers. We built a calculator to show you exactly how. The results might surprise you.
                 </p>
               </WaveCard>
 
               {/* Input Card */}
               <WaveCard 
-                className="p-6 w-full md:flex md:flex-col md:flex-1"
+                className="p-6 w-full md:flex md:flex-col md:flex-1 overflow-visible"
                 style={{ 
                   backgroundColor: 'rgba(245, 244, 252, 0.7)',
                   backdropFilter: 'blur(8px)',
@@ -208,7 +210,7 @@ export function Hero() {
               >
                 <h2 className="text-2xl font-semibold mb-6 font-soehne" style={{ color: '#28253B' }}>Calculate your take-home</h2>
             
-                <div className="space-y-4 md:flex-1">
+                <div className="space-y-4 md:flex-1 overflow-visible">
                   <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2 font-mono">
                       Currency
@@ -293,10 +295,17 @@ export function Hero() {
                     />
                   </div>
 
-                  <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2 font-mono">
-                      Total Exit Value ({currency})
-                    </label>
+                  <div className="overflow-visible">
+                    <div className="flex items-center gap-2 mb-2">
+                      <label className="text-sm font-medium text-gray-700 font-mono">
+                        Total Exit Value ({currency})
+                      </label>
+                      <Tooltip content="The total value of your company at exit before any taxes or deductions. This represents the full valuation of your business when it's sold or goes public.">
+                        <HelpCircle 
+                          className="w-4 h-4 text-gray-500 hover:text-gray-700 cursor-help transition-colors" 
+                        />
+                      </Tooltip>
+                    </div>
                     <input
                       type="text"
                       value={formatNumberWithCommas(exitValue)}
@@ -393,7 +402,12 @@ export function Hero() {
                       <CurrencyNumber value={qsbsResults.capitalGains} currency={currency} className="text-gray-800" />
                     </div>
                     <div className="flex justify-between">
-                      <span>QSBS Exempt:</span>
+                      <div className="flex items-center gap-1">
+                        <span>QSBS Exempt:</span>
+                        <Tooltip content="Qualified Small Business Stock (QSBS) exemption allows you to exclude up to $15 million USD or 10x your cost basis from federal taxes when selling qualifying small business stock held for at least 5 years.">
+                          <HelpCircle className="w-3 h-3 text-gray-500 hover:text-gray-700 cursor-help transition-colors" />
+                        </Tooltip>
+                      </div>
                       <CurrencyNumber value={qsbsResults.exemptGains} currency={currency} className="text-green-600" />
                     </div>
                     <div className="flex justify-between">
@@ -498,11 +512,21 @@ export function Hero() {
                     <CurrencyNumber value={lcgeResults.gain} currency={currency} className="text-gray-800" />
                   </div>
                   <div className="flex justify-between">
-                    <span>LCGE Exempt:</span>
+                    <div className="flex items-center gap-1">
+                      <span>LCGE Exempt:</span>
+                      <Tooltip content="Lifetime Capital Gains Exemption (LCGE) allows Canadian residents to exclude up to $1.25 million CAD in capital gains from the sale of qualifying small business corporation shares from taxation over their lifetime.">
+                        <HelpCircle className="w-3 h-3 text-gray-500 hover:text-gray-700 cursor-help transition-colors" />
+                      </Tooltip>
+                    </div>
                     <CurrencyNumber value={lcgeResults.exemptAmount} currency={currency} className="text-green-600" />
                   </div>
                   <div className="flex justify-between">
-                    <span>Taxable Gains (50%):</span>
+                    <div className="flex items-center gap-1">
+                      <span>Taxable Gains (50%):</span>
+                      <Tooltip content="In Canada, only 50% of capital gains are included in taxable income. This is known as the 'inclusion rate' - meaning if you have $100 in capital gains, only $50 is added to your taxable income and subject to your marginal tax rate.">
+                        <HelpCircle className="w-3 h-3 text-gray-500 hover:text-gray-700 cursor-help transition-colors" />
+                      </Tooltip>
+                    </div>
                     <CurrencyNumber value={lcgeResults.taxableAmount} currency={currency} className="text-gray-800" />
                   </div>
                   <div className="flex justify-between">

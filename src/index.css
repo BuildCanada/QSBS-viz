@@ -221,12 +221,14 @@ number-flow-react {
 /* Build Canada specific styles */
 html {
   scroll-behavior: smooth;
+  background-color: #C7C7E0;
 }
 
 /* Font smoothing and optimization */
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #C7C7E0;
 }
 
 /* Custom scrollbar for Build Canada */
