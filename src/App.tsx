@@ -6,8 +6,8 @@ import { FontGuide } from './components/FontGuide'
 
 function HomePage() {
   return (
-    <div className="min-h-screen bg-black">
-      <div className="p-5">
+    <div className="min-h-screen" style={{ backgroundColor: '#C7C7E0' }}>
+      <div className="p-5 flex flex-col gap-3">
         <Nav />
         <Hero />
         <Info />
@@ -18,8 +18,8 @@ function HomePage() {
 
 function FontGuidePage() {
   return (
-    <div className="min-h-screen bg-black">
-      <div className="p-5">
+    <div className="min-h-screen" style={{ backgroundColor: '#C7C7E0' }}>
+      <div className="p-5 flex flex-col gap-3">
         <FontGuide />
       </div>
     </div>

@@ -44,14 +44,6 @@ function cadToUsd(amount: number): number {
   return amount / USD_TO_CAD_RATE;
 }
 
-function convertTaxBrackets(brackets: TaxBracket[], fromUsd: boolean): TaxBracket[] {
-  return brackets.map(bracket => ({
-    min: fromUsd ? usdToCad(bracket.min) : bracket.min,
-    max: bracket.max ? (fromUsd ? usdToCad(bracket.max) : bracket.max) : null,
-    rate: bracket.rate
-  }));
-}
-
 // 2025 US Federal Capital Gains Tax Brackets (Long-term, in USD)
 const US_FEDERAL_CAPITAL_GAINS_BRACKETS_USD: TaxBracket[] = [
   { min: 0, max: 43000, rate: 0.0 },

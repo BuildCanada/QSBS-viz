@@ -1,18 +1,30 @@
 import { motion } from 'framer-motion'
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { useState, useEffect } from 'react'
+import { WaveCard } from "@/components/WaveCard"
+import { SlotMachineNumber } from "@/components/SlotMachineNumber"
+import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { calculateQSBS, US_STATES } from '@/lib/qsbs'
 import { calculateLCGE, PROVINCES } from '@/lib/lcge'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 export function Hero() {
-  const [ownershipPercentage, setOwnershipPercentage] = useState<string>('100')
+  const [ownershipPercentage, setOwnershipPercentage] = useState<number>(100)
   const [exitValue, setExitValue] = useState<string>('10000000')
-  const [costBasis, setCostBasis] = useState<string>('100000')
+
   const [selectedProvince, setSelectedProvince] = useState<string>('ON')
   const [selectedState, setSelectedState] = useState<string>('CA')
   const [currency, setCurrency] = useState<'USD' | 'CAD'>('CAD')
   const [previousCurrency, setPreviousCurrency] = useState<'USD' | 'CAD'>('CAD')
+
+  const stateTextRef = useRef<HTMLSpanElement>(null)
+  const provinceTextRef = useRef<HTMLSpanElement>(null)
+  const [stateTextWidth, setStateTextWidth] = useState<number>(100) // fallback width
+  const [provinceTextWidth, setProvinceTextWidth] = useState<number>(100) // fallback width
 
   // Exchange rate
   const USD_TO_CAD_RATE = 1.37;
@@ -23,10 +35,33 @@ export function Hero() {
     return isNaN(num) ? 0 : num;
   }
 
+  // Helper function to format numbers with commas
+  const formatNumberWithCommas = (value: string): string => {
+    // Remove any non-numeric characters except decimal point
+    const numericValue = value.replace(/[^0-9.]/g, '');
+    if (!numericValue) return '';
+    
+    // Split on decimal point
+    const parts = numericValue.split('.');
+    const integerPart = parts[0];
+    const decimalPart = parts[1];
+    
+    // Add commas to integer part
+    const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    
+    // Reassemble with decimal part if it exists
+    return decimalPart !== undefined ? `${formattedInteger}.${decimalPart}` : formattedInteger;
+  }
+
+  // Helper function to remove commas from input
+  const removeCommas = (value: string): string => {
+    return value.replace(/,/g, '');
+  }
+
   // Input validation for numeric fields
   const handleNumericKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    // Allow: backspace, delete, tab, escape, enter, decimal point
-    if ([8, 9, 27, 13, 46, 110, 190].indexOf(e.keyCode) !== -1 ||
+    // Allow: backspace, delete, tab, escape, enter, decimal point, comma
+    if ([8, 9, 27, 13, 46, 110, 190, 188].indexOf(e.keyCode) !== -1 ||
         // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X, Ctrl+Z
         (e.keyCode === 65 && e.ctrlKey) ||
         (e.keyCode === 67 && e.ctrlKey) ||
@@ -44,8 +79,9 @@ export function Hero() {
   }
 
   const handleNumericInput = (value: string, setter: (value: string) => void) => {
-    // Remove any non-numeric characters except decimal point
-    const numericValue = value.replace(/[^0-9.]/g, '');
+    // Remove commas first, then other non-numeric characters except decimal point
+    const withoutCommas = removeCommas(value);
+    const numericValue = withoutCommas.replace(/[^0-9.]/g, '');
     
     // Ensure only one decimal point
     const parts = numericValue.split('.');
@@ -57,56 +93,70 @@ export function Hero() {
     }
   }
 
-  const handlePercentageInput = (value: string) => {
-    // Remove any non-numeric characters except decimal point
-    const numericValue = value.replace(/[^0-9.]/g, '');
-    
-    // Ensure only one decimal point
-    const parts = numericValue.split('.');
-    let cleanValue = '';
-    if (parts.length > 2) {
-      cleanValue = parts[0] + '.' + parts.slice(1).join('');
-    } else {
-      cleanValue = numericValue;
-    }
-    
+  const handlePercentageChange = (value: number) => {
     // Cap at 100%
-    const numValue = parseFloat(cleanValue);
-    if (!isNaN(numValue) && numValue > 100) {
-      setOwnershipPercentage('100');
-    } else {
-      setOwnershipPercentage(cleanValue);
-    }
+    const cappedValue = Math.min(Math.max(value, 0), 100);
+    setOwnershipPercentage(cappedValue);
   }
 
   // Convert values when currency changes
   useEffect(() => {
     if (currency !== previousCurrency) {
       const currentExitValue = parseNumber(exitValue);
-      const currentCostBasis = parseNumber(costBasis);
       
       if (currency === 'USD' && previousCurrency === 'CAD') {
         // Converting from CAD to USD
         setExitValue(currentExitValue > 0 ? Math.round(currentExitValue / USD_TO_CAD_RATE).toString() : '0')
-        setCostBasis(currentCostBasis > 0 ? Math.round(currentCostBasis / USD_TO_CAD_RATE).toString() : '0')
       } else if (currency === 'CAD' && previousCurrency === 'USD') {
         // Converting from USD to CAD
         setExitValue(currentExitValue > 0 ? Math.round(currentExitValue * USD_TO_CAD_RATE).toString() : '0')
-        setCostBasis(currentCostBasis > 0 ? Math.round(currentCostBasis * USD_TO_CAD_RATE).toString() : '0')
       }
       setPreviousCurrency(currency)
     }
-  }, [currency, previousCurrency, exitValue, costBasis])
+  }, [currency, previousCurrency, exitValue])
 
-  // Calculate personal exit value and cost basis
-  const personalExitValue = parseNumber(exitValue) * (parseNumber(ownershipPercentage) / 100)
-  const personalCostBasis = parseNumber(costBasis) * (parseNumber(ownershipPercentage) / 100)
+  // Measure text widths for accurate underlines
+  useLayoutEffect(() => {
+    if (stateTextRef.current) {
+      const width = stateTextRef.current.offsetWidth
+      setStateTextWidth(width > 0 ? width : US_STATES[selectedState].name.length * 12) // fallback calc
+    } else {
+      setStateTextWidth(US_STATES[selectedState].name.length * 12) // fallback calc
+    }
+    
+    if (provinceTextRef.current) {
+      const width = provinceTextRef.current.offsetWidth
+      setProvinceTextWidth(width > 0 ? width : PROVINCES[selectedProvince].name.length * 12) // fallback calc
+    } else {
+      setProvinceTextWidth(PROVINCES[selectedProvince].name.length * 12) // fallback calc
+    }
+  }, [selectedState, selectedProvince])
+
+  // Additional effect to re-measure after render
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (stateTextRef.current) {
+        const width = stateTextRef.current.offsetWidth
+        if (width > 0) setStateTextWidth(width)
+      }
+      if (provinceTextRef.current) {
+        const width = provinceTextRef.current.offsetWidth
+        if (width > 0) setProvinceTextWidth(width)
+      }
+    }, 0)
+    
+    return () => clearTimeout(timer)
+  }, [selectedState, selectedProvince])
+
+  // Calculate personal exit value
+  const personalExitValue = parseNumber(exitValue) * (ownershipPercentage / 100)
+  const personalCostBasis = 0
 
   // Calculate QSBS and LCGE using utility functions
   const qsbsResults = calculateQSBS({ 
-    ownershipPercentage: parseNumber(ownershipPercentage), 
+    ownershipPercentage: ownershipPercentage, 
     exitValue: parseNumber(exitValue), 
-    costBasis: parseNumber(costBasis), 
+    costBasis: 0, 
     currency 
   }, selectedState)
   const lcgeResults = calculateLCGE(personalExitValue, personalCostBasis, selectedProvince, currency)
@@ -122,179 +172,196 @@ export function Hero() {
   }
 
   return (
-    <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-transparent overflow-hidden border border-white border-t-0">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
-          <motion.h1 
-            className="text-4xl md:text-6xl font-semibold mb-6 text-white font-soehne"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            QSBS vs LCGE Calculator
-          </motion.h1>
-          
-          <motion.p 
-            className="text-lg md:text-xl text-gray-300 mb-8 max-w-3xl mx-auto font-financier"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-          >
-            Compare tax benefits: US Qualified Small Business Stock vs Canadian Lifetime Capital Gains Exemption
-          </motion.p>
-        </div>
-
+    <section className="relative overflow-hidden">
+      <div className="w-full">
         <motion.div 
-          className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto"
+          className="grid grid-cols-1 md:grid-cols-2 gap-3 h-full w-full"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
+          transition={{ duration: 0.8 }}
         >
-          {/* Input Section */}
-          <Card className="p-6 border border-white bg-black">
-            <h2 className="text-2xl font-semibold mb-6 text-white font-soehne">Input Details</h2>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2 font-financier">
-                  Currency
-                </label>
-                <div className="relative flex rounded-lg bg-gray-800 p-1 w-full">
-                  <motion.div
-                    className="absolute top-1 bottom-1 left-1 bg-white rounded-md shadow-sm"
-                    style={{ width: 'calc(50% - 4px)' }}
-                    initial={false}
-                    animate={{
-                      x: currency === 'CAD' ? 0 : '100%',
-                    }}
-                    transition={{
-                      type: "tween",
-                      ease: "easeInOut",
-                      duration: 0.25
+          {/* Left Column - Input Section */}
+          <div className="space-y-3 h-full w-full">
+            {/* Title Card */}
+            <WaveCard 
+              className="p-6 w-full"
+              style={{ 
+                backgroundColor: 'rgba(245, 244, 252, 0.7)',
+                backdropFilter: 'blur(8px)',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.05)'
+              }}
+            >
+              <h1 className="text-3xl md:text-4xl font-semibold font-soehne mb-2" style={{ color: '#28253B' }}>
+                The Economics of Ambition
+              </h1>
+              <p className="text-lg md:text-xl font-soehne text-gray-700 mb-4">
+                How startup exits are taxed in Canada and the USA
+              </p>
+              <p className="text-base font-mono text-gray-800 leading-tight">
+                The conventional wisdom has always been: 'If you want to swing big, go to America—you'll be rewarded.' This belief has driven Canada's most ambitious entrepreneurs to leave in droves, chasing the American dream. But here's the twist: the economics of a big swing have long favored staying in Canada. Thanks to the way our capital gains taxes are constructed, mathematically speaking, there are many scenarios where Canadian founders walk away with more after a huge exit than their American peers. We built a calculator to show you exactly how. The results might surprise you.
+              </p>
+            </WaveCard>
+
+            {/* Input Card */}
+            <WaveCard 
+              className="p-6 h-full w-full"
+              style={{ 
+                backgroundColor: 'rgba(245, 244, 252, 0.7)',
+                backdropFilter: 'blur(8px)',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.05)'
+              }}
+            >
+              <h2 className="text-2xl font-semibold mb-6 font-soehne" style={{ color: '#28253B' }}>Calculate your take-home</h2>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2 font-mono">
+                    Currency
+                  </label>
+                  <div className="relative flex bg-gray-200 p-1 w-full border border-gray-400">
+                    <motion.div
+                      className="absolute top-1 bottom-1 left-1 shadow-sm"
+                      style={{ 
+                        width: 'calc(50% - 4px)',
+                        backgroundColor: '#28253B'
+                      }}
+                      initial={false}
+                      animate={{
+                        x: currency === 'CAD' ? 0 : '100%',
+                      }}
+                      transition={{
+                        type: "tween",
+                        ease: "easeInOut",
+                        duration: 0.25
+                      }}
+                    />
+                    <button
+                      onClick={() => setCurrency('CAD')}
+                      className={`relative z-10 flex items-center justify-center space-x-2 w-1/2 py-2 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-0 active:outline-none ${
+                        currency === 'CAD'
+                          ? 'text-white'
+                          : 'text-gray-700'
+                      }`}
+                      style={{ 
+                        WebkitTapHighlightColor: 'transparent',
+                        outline: 'none',
+                        border: 'none',
+                        color: currency === 'CAD' ? 'white' : '#28253B'
+                      }}
+                    >
+                      <span className="text-base">🇨🇦</span>
+                      <span className="font-mono">CAD</span>
+                    </button>
+                    <button
+                      onClick={() => setCurrency('USD')}
+                      className={`relative z-10 flex items-center justify-center space-x-2 w-1/2 py-2 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-0 active:outline-none ${
+                        currency === 'USD'
+                          ? 'text-white'
+                          : 'text-gray-700'
+                      }`}
+                      style={{ 
+                        WebkitTapHighlightColor: 'transparent',
+                        outline: 'none',
+                        border: 'none',
+                        color: currency === 'USD' ? 'white' : '#28253B'
+                      }}
+                    >
+                      <span className="text-base">🇺🇸</span>
+                      <span className="font-mono">USD</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="text-sm font-medium text-gray-700 font-mono">
+                      Ownership Percentage
+                    </label>
+                    <SlotMachineNumber 
+                      value={ownershipPercentage} 
+                      className="text-sm font-semibold text-gray-800"
+                      onValueChange={handlePercentageChange}
+                    />
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="1"
+                    value={Math.round(ownershipPercentage)}
+                    onChange={(e) => handlePercentageChange(parseInt(e.target.value))}
+                    className="w-full h-2 bg-gray-200 appearance-none cursor-pointer slider"
+                    style={{
+                      background: `linear-gradient(to right, #28253B 0%, #28253B ${ownershipPercentage}%, #C8B2DB ${ownershipPercentage}%, #C8B2DB 100%)`
                     }}
                   />
-                  <button
-                    onClick={() => setCurrency('CAD')}
-                    className={`relative z-10 flex items-center justify-center space-x-2 w-1/2 py-2 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-0 active:outline-none ${
-                      currency === 'CAD'
-                        ? 'text-gray-900'
-                        : 'text-gray-300 hover:text-white'
-                    }`}
-                    style={{ 
-                      WebkitTapHighlightColor: 'transparent',
-                      outline: 'none',
-                      border: 'none'
-                    }}
-                  >
-                    <span className="text-base">🇨🇦</span>
-                    <span className="font-mono">CAD</span>
-                  </button>
-                  <button
-                    onClick={() => setCurrency('USD')}
-                    className={`relative z-10 flex items-center justify-center space-x-2 w-1/2 py-2 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-0 active:outline-none ${
-                      currency === 'USD'
-                        ? 'text-gray-900'
-                        : 'text-gray-300 hover:text-white'
-                    }`}
-                    style={{ 
-                      WebkitTapHighlightColor: 'transparent',
-                      outline: 'none',
-                      border: 'none'
-                    }}
-                  >
-                    <span className="text-base">🇺🇸</span>
-                    <span className="font-mono">USD</span>
-                  </button>
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2 font-financier">
-                  Ownership Percentage (%)
-                </label>
-                <input
-                  type="number"
-                  value={ownershipPercentage}
-                  onChange={(e) => handlePercentageInput(e.target.value)}
-                  onKeyDown={handleNumericKeyDown}
-                  className="w-full px-3 py-2 border border-white rounded-none bg-black text-white focus:outline-none focus:ring-2 focus:ring-gray-500 font-mono selection:bg-blue-500 selection:text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  min="0"
-                  max="100"
-                />
-              </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2 font-mono">
+                    Total Exit Value ({currency})
+                  </label>
+                  <input
+                    type="text"
+                    value={formatNumberWithCommas(exitValue)}
+                    onChange={(e) => handleNumericInput(e.target.value, setExitValue)}
+                    onKeyDown={handleNumericKeyDown}
+                    className="w-full px-3 py-2 font-mono selection:bg-blue-500 selection:text-white focus:outline-none focus:ring-2 focus:ring-gray-500"
+                    style={{ 
+                      backgroundColor: 'rgba(245, 244, 252, 0.8)',
+                      border: '1px solid #28253B',
+                      color: '#28253B'
+                    }}
+                  />
+                </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2 font-financier">
-                  Total Exit Value ({currency})
-                </label>
-                <input
-                  type="number"
-                  value={exitValue}
-                  onChange={(e) => handleNumericInput(e.target.value, setExitValue)}
-                  onKeyDown={handleNumericKeyDown}
-                  className="w-full px-3 py-2 border border-white rounded-none bg-black text-white focus:outline-none focus:ring-2 focus:ring-gray-500 font-mono selection:bg-blue-500 selection:text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  min="0"
-                  max="1000000000000000"
-                />
-              </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2 font-financier">
-                  Cost Basis ({currency})
-                </label>
-                <input
-                  type="number"
-                  value={costBasis}
-                  onChange={(e) => handleNumericInput(e.target.value, setCostBasis)}
-                  onKeyDown={handleNumericKeyDown}
-                  className="w-full px-3 py-2 border border-white rounded-none bg-black text-white focus:outline-none focus:ring-2 focus:ring-gray-500 font-mono selection:bg-blue-500 selection:text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  min="0"
-                  max="1000000000000000"
-                />
               </div>
+            </WaveCard>
+          </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2 font-financier">
-                  US State
-                </label>
-                <select
-                  value={selectedState}
-                  onChange={(e) => setSelectedState(e.target.value)}
-                  className="w-full px-3 py-2 border border-white rounded-none bg-black text-white focus:outline-none focus:ring-2 focus:ring-gray-500 font-mono"
-                >
-                  {Object.entries(US_STATES).map(([code, state]) => (
-                    <option key={code} value={code} className="bg-black">
-                      {state.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2 font-financier">
-                  Province/Territory (Canada)
-                </label>
-                <select
-                  value={selectedProvince}
-                  onChange={(e) => setSelectedProvince(e.target.value)}
-                  className="w-full px-3 py-2 border border-white rounded-none bg-black text-white focus:outline-none focus:ring-2 focus:ring-gray-500 font-mono"
-                >
-                  {Object.entries(PROVINCES).map(([code, province]) => (
-                    <option key={code} value={code} className="bg-black">
-                      {province.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </Card>
-
-          {/* Results Section */}
-          <div className="space-y-4">
+          {/* Right Column - Results Section */}
+          <div className="space-y-3 h-full w-full">
             {/* QSBS Results */}
-            <Card className="p-6 border border-white bg-blue-900">
-              <h3 className="text-xl font-semibold mb-4 text-blue-200 font-soehne">🇺🇸 QSBS ({US_STATES[selectedState].name})</h3>
-              <div className="space-y-2 text-sm text-white font-financier">
+            <div className="p-6 bg-blue-900 w-full">
+              <h3 className="text-xl font-semibold mb-4 text-blue-200 font-soehne">
+                🇺🇸 Your take-home in{' '}
+                <span className="relative inline-block">
+                  <Select value={selectedState} onValueChange={(value) => setSelectedState(value)}>
+                    <SelectTrigger 
+                      className="h-auto w-auto p-0 border-none bg-transparent font-soehne text-xl font-semibold text-blue-200 shadow-none focus:ring-0"
+                      style={{ 
+                        color: '#BFDBFE',
+                        minWidth: 'fit-content'
+                      }}
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-blue-900 border-blue-700">
+                      {Object.entries(US_STATES).map(([code, state]) => (
+                        <SelectItem key={code} value={code} className="text-blue-200 focus:bg-blue-800 focus:text-blue-100">
+                          {state.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {/* Hidden text for width measurement */}
+                  <span 
+                    ref={stateTextRef}
+                    className="absolute opacity-0 pointer-events-none font-soehne text-xl font-semibold"
+                    aria-hidden="true"
+                  >
+                    {US_STATES[selectedState].name}
+                  </span>
+                  <span 
+                    className="absolute bottom-0 left-0 h-0.5 bg-blue-200"
+                    style={{ width: `${stateTextWidth + 15}px` }}
+                  ></span>
+                </span>
+              </h3>
+              <div className="space-y-2 text-sm text-white font-mono">
                 <div className="flex justify-between">
                   <span>Your Exit Value:</span>
                   <span className="font-bold font-mono">{formatCurrency(qsbsResults.personalExitValue)}</span>
@@ -329,12 +396,46 @@ export function Hero() {
                   <span className="text-green-400 font-mono">{formatCurrency(qsbsResults.afterTaxProceeds)}</span>
                 </div>
               </div>
-            </Card>
+            </div>
 
             {/* LCGE Results */}
-            <Card className="p-6 border border-white bg-red-900">
-              <h3 className="text-xl font-semibold mb-4 text-red-200 font-soehne">🇨🇦 LCGE ({PROVINCES[selectedProvince].name})</h3>
-              <div className="space-y-2 text-sm text-white font-financier">
+            <div className="p-6 bg-red-900 w-full">
+              <h3 className="text-xl font-semibold mb-4 text-red-200 font-soehne">
+                🇨🇦 Your take-home in{' '}
+                <span className="relative inline-block">
+                  <Select value={selectedProvince} onValueChange={(value) => setSelectedProvince(value)}>
+                    <SelectTrigger 
+                      className="h-auto w-auto p-0 border-none bg-transparent font-soehne text-xl font-semibold text-red-200 shadow-none focus:ring-0"
+                      style={{ 
+                        color: '#FECACA',
+                        minWidth: 'fit-content'
+                      }}
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-red-900 border-red-700">
+                      {Object.entries(PROVINCES).map(([code, province]) => (
+                        <SelectItem key={code} value={code} className="text-red-200 focus:bg-red-800 focus:text-red-100">
+                          {province.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {/* Hidden text for width measurement */}
+                  <span 
+                    ref={provinceTextRef}
+                    className="absolute opacity-0 pointer-events-none font-soehne text-xl font-semibold"
+                    aria-hidden="true"
+                  >
+                    {PROVINCES[selectedProvince].name}
+                  </span>
+                  <span 
+                    className="absolute bottom-0 left-0 h-0.5 bg-red-200"
+                    style={{ width: `${provinceTextWidth + 15}px` }}
+                  ></span>
+                </span>
+              </h3>
+              <div className="space-y-2 text-sm text-white font-mono">
                 <div className="flex justify-between">
                   <span>Your Exit Value:</span>
                   <span className="font-bold font-mono">{formatCurrency(personalExitValue)}</span>
@@ -348,7 +449,7 @@ export function Hero() {
                   <span className="text-green-400 font-mono">{formatCurrency(lcgeResults.exemptAmount)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Taxable Income (50%):</span>
+                  <span>Taxable Gains (50%):</span>
                   <span className="font-mono">{formatCurrency(lcgeResults.taxableAmount)}</span>
                 </div>
                 <div className="flex justify-between">
@@ -369,20 +470,20 @@ export function Hero() {
                   <span className="text-green-400 font-mono">{formatCurrency(lcgeResults.afterTaxAmount)}</span>
                 </div>
               </div>
-            </Card>
+            </div>
 
             {/* Comparison */}
-            <Card className="p-4 border border-white bg-yellow-900">
-              <div className="flex justify-between items-center text-white font-financier">
+            <div className="p-4 bg-yellow-900 w-full">
+              <div className="flex justify-between items-center text-white font-mono">
                 <span className="font-bold">Difference:</span>
                 <span className={`text-lg font-bold font-mono ${qsbsResults.afterTaxProceeds > lcgeResults.afterTaxAmount ? 'text-green-400' : 'text-red-400'}`}>
                   {qsbsResults.afterTaxProceeds > lcgeResults.afterTaxAmount ? '+' : ''}{formatCurrency(qsbsResults.afterTaxProceeds - lcgeResults.afterTaxAmount)}
                 </span>
               </div>
-              <p className="text-xs text-gray-300 mt-2 font-financier">
+              <p className="text-xs text-gray-300 mt-2 font-mono">
                 {qsbsResults.afterTaxProceeds > lcgeResults.afterTaxAmount ? 'QSBS provides better tax benefits' : 'LCGE provides better tax benefits'}
               </p>
-            </Card>
+            </div>
           </div>
         </motion.div>
       </div>
