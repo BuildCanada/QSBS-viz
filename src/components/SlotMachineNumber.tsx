@@ -14,12 +14,12 @@ export const SlotMachineNumber = ({ value, className = '', onValueChange }: Slot
   const handleClick = () => {
     if (onValueChange) {
       setIsEditing(true)
-      setEditValue(Math.round(value).toString())
+      setEditValue(value.toString())
     }
   }
 
   const handleSubmit = () => {
-    const newValue = parseInt(editValue) || 0
+    const newValue = parseFloat(editValue) || 0
     const clampedValue = Math.min(Math.max(newValue, 0), 100)
     onValueChange?.(clampedValue)
     setIsEditing(false)
@@ -43,18 +43,18 @@ export const SlotMachineNumber = ({ value, className = '', onValueChange }: Slot
         <input
           type="text"
           value={editValue}
-          onChange={(e) => setEditValue(e.target.value.replace(/[^0-9]/g, ''))}
+          onChange={(e) => setEditValue(e.target.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1'))}
           onKeyDown={handleKeyDown}
           onBlur={handleBlur}
           className="inline-block font-mono bg-transparent border-b border-current focus:outline-none text-center font-normal"
           style={{ 
-            width: '3ch', 
-            minWidth: '2ch',
+            width: '5ch', 
+            minWidth: '3ch',
             fontVariantNumeric: 'tabular-nums',
             fontWeight: 'normal'
           }}
           autoFocus
-          maxLength={3}
+          maxLength={5}
         />
         <span className="font-mono ml-0.5 font-normal">%</span>
       </div>
@@ -68,7 +68,7 @@ export const SlotMachineNumber = ({ value, className = '', onValueChange }: Slot
       style={{ fontVariantNumeric: 'tabular-nums' }}
     >
       <NumberFlow 
-        value={Math.round(value)} 
+        value={parseFloat(value.toFixed(1))} 
         suffix="%" 
         willChange={true}
         transformTiming={{ duration: 200, easing: 'ease-out' }}

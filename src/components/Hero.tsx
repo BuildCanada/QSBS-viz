@@ -53,10 +53,10 @@ export function Hero() {
     getFromLocalStorage('qsbs-selected-state', 'CA')
   )
   const [currency, setCurrency] = useState<'USD' | 'CAD'>(() => 
-    getFromLocalStorage('qsbs-currency', 'CAD')
+    getFromLocalStorage('qsbs-currency', 'USD')
   )
   const [previousCurrency, setPreviousCurrency] = useState<'USD' | 'CAD'>(() => 
-    getFromLocalStorage('qsbs-currency', 'CAD')
+    getFromLocalStorage('qsbs-currency', 'USD')
   )
 
   const stateTextRef = useRef<HTMLSpanElement>(null)
@@ -92,6 +92,24 @@ export function Hero() {
   const parseNumber = (value: string): number => {
     const num = parseFloat(value.replace(/,/g, ''));
     return isNaN(num) ? 0 : num;
+  }
+
+  // Example company data
+  const exampleCompanies = [
+    { name: 'DoorDash', ownership: 5.2, exitValue: 60200000000, logo: '/logos/DoorDash-logo.png' },
+    { name: 'Airbnb', ownership: 11.4, exitValue: 86500000000, logo: '/logos/Airbnb_Logo.svg.png' },
+    { name: 'Shopify', ownership: 10.3, exitValue: 2100000000, logo: '/logos/Shopify_logo_2018.svg.png' },
+    { name: 'Tesla', ownership: 28.3, exitValue: 1600000000, logo: '/logos/tesla-logo-png.png' },
+    { name: 'Palantir', ownership: 29.8, exitValue: 15800000000, logo: '/logos/Palantir_company_logo.png' }
+  ]
+
+  const handleExampleClick = (company: typeof exampleCompanies[0]) => {
+    setOwnershipPercentage(company.ownership)
+    setExitValue(company.exitValue.toString())
+    // Set currency to USD since these are USD values
+    if (currency !== 'USD') {
+      setCurrency('USD')
+    }
   }
 
   const handlePercentageChange = (value: number) => {
@@ -192,7 +210,10 @@ export function Hero() {
                   How startup exits are taxed in Canada and the USA
                 </p>
                 <p className="text-base font-financier text-gray-800 leading-tight">
-                  The conventional wisdom has always been: "If you want to swing big, go to America—you'll be rewarded." This belief has driven Canada's most ambitious entrepreneurs to leave in droves, chasing the American dream. But here's the twist: the economics of a big swing have long favored staying in Canada. Thanks to the way our capital gains taxes are constructed, mathematically speaking, there are many scenarios where Canadian founders walk away with more after a huge exit than their American peers. We built a calculator to show you exactly how. The results might surprise you.
+                  The conventional wisdom has always been: "If you want to swing big, go to America—you'll be rewarded." This belief has driven Canada's most ambitious entrepreneurs to leave in droves, chasing the American dream. 
+                  <br />
+                  <br />
+                  But is this true? We built a calculator to show you exactly how different exit scenarios impact founders. The results might surprise you.
                 </p>
               </WaveCard>
 
@@ -206,7 +227,8 @@ export function Hero() {
                   boxShadow: '0 4px 16px rgba(0, 0, 0, 0.05)'
                 }}
               >
-                <h2 className="text-2xl font-semibold mb-6 font-soehne" style={{ color: '#28253B' }}>Calculate your take-home</h2>
+                <h2 className="text-2xl font-semibold mb-4 font-soehne" style={{ color: '#28253B' }}>Calculate your take-home</h2>
+                <hr className="border-gray-300 mb-6" />
             
                 <div className="space-y-4 md:flex-1 overflow-visible">
                   <div>
@@ -282,9 +304,9 @@ export function Hero() {
                         type="range"
                         min="0"
                         max="100"
-                        step="1"
-                        value={Math.round(ownershipPercentage)}
-                        onChange={(e) => handlePercentageChange(parseInt(e.target.value))}
+                        step="0.1"
+                        value={ownershipPercentage}
+                        onChange={(e) => handlePercentageChange(parseFloat(e.target.value))}
                         className="w-full h-2 bg-gray-200 appearance-none cursor-pointer slider"
                         style={{
                           background: `linear-gradient(to right, #28253B 0%, #28253B ${ownershipPercentage}%, #C8B2DB ${ownershipPercentage}%, #C8B2DB 100%)`,
@@ -317,6 +339,33 @@ export function Hero() {
                         color: '#28253B'
                       }}
                     />
+                  </div>
+
+                  {/* Example exits section */}
+                  <div className="mt-6">
+                    <h3 className="text-sm font-medium text-gray-700 font-mono mb-3">
+                      Example exits
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2">
+                      {exampleCompanies.map((company) => (
+                        <button
+                          key={company.name}
+                          onClick={() => handleExampleClick(company)}
+                          className="p-4 bg-white/50 hover:bg-white/80 border border-gray-200 hover:border-gray-300 rounded-lg transition-all duration-200 hover:shadow-sm group flex items-center justify-center"
+                          style={{ 
+                            backgroundColor: 'rgba(255, 255, 255, 0.6)',
+                            backdropFilter: 'blur(4px)',
+                            aspectRatio: '3/2'
+                          }}
+                        >
+                          <img 
+                            src={company.logo} 
+                            alt={`${company.name} logo`}
+                            className="max-w-full max-h-full object-contain opacity-80 group-hover:opacity-100 transition-opacity"
+                          />
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </WaveCard>
@@ -391,6 +440,7 @@ export function Hero() {
                       ></span>
                     </span>
                   </h3>
+                  <hr className="border-gray-300 mb-4" />
                   <div className="space-y-2 text-sm font-mono" style={{ color: '#28253B' }}>
                     <div className="flex justify-between">
                       <span>Your Exit Value:</span>
@@ -501,6 +551,7 @@ export function Hero() {
                     ></span>
                   </span>
                 </h3>
+                <hr className="border-gray-300 mb-4" />
                 <div className="space-y-2 text-sm font-mono" style={{ color: '#28253B' }}>
                   <div className="flex justify-between">
                     <span>Your Exit Value:</span>
