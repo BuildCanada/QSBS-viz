@@ -344,7 +344,7 @@ export function Hero() {
                   {/* Example exits section */}
                   <div className="mt-6">
                     <h3 className="text-sm font-medium text-gray-700 font-mono mb-3">
-                      Example exits
+                      Example Exits
                     </h3>
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
                       {exampleCompanies.map((company) => {
@@ -590,7 +590,7 @@ export function Hero() {
                       <span>Taxable Gains (50%):</span>
                       <Tooltip 
                         content="In Canada, only 50% of capital gains are included in taxable income. This is known as the 'inclusion rate' - meaning if you have $100 in capital gains, only $50 is added to your taxable income and subject to your marginal tax rate."
-                        position="left"
+                        position="right"
                       >
                         <HelpCircle className="w-3 h-3 text-gray-500 hover:text-gray-700 cursor-help transition-colors" />
                       </Tooltip>
@@ -704,7 +704,7 @@ export function Hero() {
                   Big exit events are taxed favourably in Canada, but unfortunately there are never any big exits to tax.
                 </p>
                 <p className="text-base font-financier text-gray-800 leading-tight">
-                Today, the tax gap between Canada and the United States creates a massive incentive to relocate to the US. For exits less than $75M, the US offers a dramatically better outcome for founders and investors. For exits greater than $75M, the US offers a better outcome for investors. It's no surprise then that we're seeing US investors ask Canadian startups to reincorporate south of the border — losing talent, capital, and future tax revenues. Founders who are ambitious and want to swing big suddenly find that the investors needed to back them do not exist north of the border.
+                Today, the tax gap between Canada and the United States creates a massive incentive to relocate to the US. For exits less than $75M, the US offers a dramatically better outcome for founders and investors. For exits greater than $75M, the US offers a better outcome for investors. Furthermore, QSBS applies PER business, while LCGE only applies once for an individual, further discouraging entrepreneurs who know how to do it from doing it again, and also discouraging investors from investing in multiple businesses. It's no surprise then that we're seeing US investors ask Canadian startups to reincorporate south of the border — losing talent, capital, and future tax revenues. Founders who are ambitious and want to swing big suddenly find that the investors needed to back them do not exist north of the border.
                 <br />
                 <br />
                 But there's reason for optimism. At the very top end of the market (multi-billion-dollar exits) Canada is already reasonably competitive for founders. This suggests we don't need to start from scratch. If we can extend the same benefits that already exist for large-scale capital gains to earlier-stage companies and participants, we can close the gap quickly. Right now what Canada has done is built the top floors of a skyscraper, but has forgotten to build the 50 floors below.

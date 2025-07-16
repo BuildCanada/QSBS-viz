@@ -12,6 +12,7 @@ export function Tooltip({ content, children, className = '', position = 'right' 
   const [isVisible, setIsVisible] = useState(false)
   const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 })
   const triggerRef = useRef<HTMLDivElement>(null)
+  const tooltipRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (isVisible && triggerRef.current) {
@@ -26,17 +27,44 @@ export function Tooltip({ content, children, className = '', position = 'right' 
         top = rect.bottom + scrollTop + 8 // 8px spacing
         left = rect.left + scrollLeft + rect.width / 2 - 160 // 160px is half of tooltip width (320px)
       } else if (position === 'left') {
-        top = rect.top + scrollTop + rect.height / 2 - 40 // Better center vertically (assuming ~80px tooltip height)
+        top = rect.top + scrollTop + rect.height / 2 // Center vertically first
         left = rect.left + scrollLeft - 320 - 8 // 320px tooltip width + 8px spacing
       } else {
         // Default right position
-        top = rect.top + scrollTop + rect.height / 2 - 50 // Better center vertically (assuming ~80px tooltip height)
+        top = rect.top + scrollTop + rect.height / 2 // Center vertically first
         left = rect.right + scrollLeft + 8 // 8px spacing
       }
       
       setTooltipPosition({ top, left })
     }
   }, [isVisible, position])
+
+  // Second effect to adjust positioning after tooltip is rendered and we can measure it
+  useEffect(() => {
+    if (isVisible && triggerRef.current && tooltipRef.current) {
+      const triggerRect = triggerRef.current.getBoundingClientRect()
+      const tooltipRect = tooltipRef.current.getBoundingClientRect()
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+      const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
+      
+      let top = 0
+      let left = 0
+      
+      if (position === 'bottom') {
+        top = triggerRect.bottom + scrollTop + 8 // 8px spacing
+        left = triggerRect.left + scrollLeft + triggerRect.width / 2 - tooltipRect.width / 2
+      } else if (position === 'left') {
+        top = triggerRect.top + scrollTop + triggerRect.height / 2 - tooltipRect.height / 2 // Properly center using actual height
+        left = triggerRect.left + scrollLeft - tooltipRect.width - 8 // Use actual width + 8px spacing
+      } else {
+        // Default right position
+        top = triggerRect.top + scrollTop + triggerRect.height / 2 - tooltipRect.height / 2 // Properly center using actual height
+        left = triggerRect.right + scrollLeft + 8 // 8px spacing
+      }
+      
+      setTooltipPosition({ top, left })
+    }
+  }, [isVisible, position, content]) // Re-run when content changes too
 
   const getArrowStyles = () => {
     if (position === 'bottom') {
@@ -83,6 +111,7 @@ export function Tooltip({ content, children, className = '', position = 'right' 
 
   const tooltipContent = isVisible && (
     <div 
+      ref={tooltipRef}
       style={{
         position: 'absolute',
         top: tooltipPosition.top,

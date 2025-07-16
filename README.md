@@ -1,25 +1,32 @@
-# Exit Value Calculator - Special Economic Zone Landing Page
+# Startup Exit Value Calculator
 
-A modern, responsive landing page for Exit Value Calculator, a next-generation Special Economic Zone (SEZ) inspired by successful models like Shenzhen.
+A comprehensive calculator comparing startup exit tax implications between Canada and the United States. Explore the economics of ambition and understand how different exit scenarios impact founders through QSBS (USA) vs LCGE (Canada) tax benefits.
 
 ## 🚀 Technologies
 
 - **[Vite](https://vitejs.dev/)** (v7.0.3) - Ultra-fast development and build tool
 - **[React 19](https://react.dev/)** with TypeScript - Latest React with full type safety
-- **[Tailwind CSS](https://tailwindcss.com/)** (v4.1.11) - Latest utility-first CSS framework
+- **[Tailwind CSS](https://tailwindcss.com/)** - Modern utility-first CSS framework
 - **[shadcn/ui](https://ui.shadcn.com/)** - Beautiful, accessible React components
+- **[Framer Motion](https://www.framer.com/motion/)** - Smooth animations and transitions
 - **[Bun](https://bun.sh/)** - Fast package manager and runtime
 
 ## 🏗️ Project Structure
 
 ```
-Exit-Value-Calculator/
+startup-exit-calculator/
 ├── src/
-│   ├── components/ui/     # shadcn/ui components
-│   ├── lib/              # Utility functions
-│   ├── App.tsx           # Main landing page
-│   └── index.css         # Tailwind CSS imports
-├── public/               # Static assets
+│   ├── components/
+│   │   ├── ui/           # shadcn/ui components
+│   │   ├── Hero.tsx      # Main calculator interface
+│   │   └── ...           # Other components
+│   ├── lib/
+│   │   ├── qsbs.ts       # US QSBS calculations
+│   │   ├── lcge.ts       # Canada LCGE calculations
+│   │   └── utils.ts      # Utility functions
+│   ├── App.tsx           # Main application
+│   └── index.css         # Global styles
+├── public/               # Static assets and logos
 └── README.md
 ```
 
@@ -42,68 +49,74 @@ Exit-Value-Calculator/
    ```
 
 3. **Open your browser:**
-   Visit `http://localhost:5173` to see the landing page
+   Visit `http://localhost:5173` to see the calculator
 
 ### Other Commands
 
 - **Build for production:**
-  ```bash
-  bun run build
-  ```
+   ```bash
+   bun run build
+   ```
 
 - **Preview production build:**
-  ```bash
-  bun run preview
-  ```
+   ```bash
+   bun run preview
+   ```
 
 - **Lint code:**
-  ```bash
-  bun run lint
-  ```
+   ```bash
+   bun run lint
+   ```
 
-## 🎨 Adding Components
+## 💡 Features
 
-Add new shadcn/ui components using:
+### Calculator Functionality
 
-```bash
-bunx shadcn@latest add [component-name]
-```
+- **Exit Value Input** - Set total company exit value and ownership percentage
+- **Currency Support** - Toggle between USD and CAD with automatic conversion
+- **Real-time Calculations** - Instant updates as you adjust parameters
+- **Tax Breakdown** - Detailed breakdown of federal and state/provincial taxes
+- **Comparison View** - Side-by-side comparison of Canada vs USA outcomes
 
-Example:
-```bash
-bunx shadcn@latest add dialog
-bunx shadcn@latest add form
-```
+### Tax Systems Covered
 
-## 🌟 Features
+#### United States (QSBS)
+- **Qualified Small Business Stock** exemption up to $15M USD
+- Federal capital gains tax (0% on exempt gains, 20% on taxable)
+- State-by-state tax variations
+- All 50 US states supported
 
-### Landing Page Sections
+#### Canada (LCGE)
+- **Lifetime Capital Gains Exemption** up to $1.25M CAD
+- 50% inclusion rate for capital gains
+- Federal and provincial tax calculations
+- All Canadian provinces and territories supported
 
-1. **Navigation** - Sticky header with Exit Value Calculator branding
-2. **Hero Section** - Compelling introduction with gradient text effects
-3. **Key Features** - Innovation Hub, Sustainable Development, Strategic Location
-4. **Economic Zones** - Specialized zones for different industries
-5. **Investment Opportunities** - Benefits and contact information
-6. **Footer** - Complete contact details and links
+### Example Scenarios
 
-### Design Highlights
+- Small business acquisitions
+- Post-Series A exits
+- Large venture capital returns
+- Public company examples (Shopify, Airbnb)
 
-- Fully responsive design
-- Modern gradient backgrounds
-- Smooth hover effects and transitions
-- Professional typography
-- Accessible components from shadcn/ui
-- SEZ-focused content and messaging
+## 🎨 Design Features
 
-## 📱 Responsive Design
+- **Responsive Design** - Works seamlessly on desktop, tablet, and mobile
+- **Interactive Elements** - Animated borders, hover effects, and smooth transitions
+- **Professional UI** - Custom typography with Söhne, Financier Text, and Founders Grotesk fonts
+- **Tooltips** - Contextual help explaining tax concepts
+- **Visual Feedback** - Color-coded results showing which jurisdiction is more favorable
 
-The landing page is fully responsive and works seamlessly across:
+## 📊 Understanding the Results
 
-- Desktop computers
-- Tablets
-- Mobile devices
+The calculator helps answer key questions:
 
-## 🚀 Deployment
+- **Which country offers better tax treatment for your exit scenario?**
+- **How much would you save by incorporating in one jurisdiction vs another?**
+- **What are the breakeven points between QSBS and LCGE benefits?**
+- **How do state/provincial taxes impact the overall comparison?**
+
+## 🌐 Deployment
 
 The project can be deployed to any static hosting service:
 
@@ -124,15 +137,13 @@ The project can be deployed to any static hosting service:
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Test thoroughly
+4. Test thoroughly across different scenarios
 5. Submit a pull request
 
-## 📧 Contact
+## 📧 Built By
 
-For questions about Exit Value Calculator SEZ:
-- Email: info@aurorafoundry.com
-- Phone: +1 (555) 123-4567
+**Jesse Lee** - [jesselee.ca](https://jesselee.ca)
 
 ---
 
-**Exit Value Calculator** - Building the future of economic development through innovation, sustainability, and strategic growth.
+**Understanding the Economics of Ambition** - Compare how startup exits are taxed in Canada vs the USA and make informed decisions about where to build your company.

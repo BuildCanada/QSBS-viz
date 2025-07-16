@@ -1,9 +1,9 @@
 {
-  "name": "Exit-Value-Calculator",
+  "name": "startup-exit-calculator",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Exit Value Calculator - Next-Generation Special Economic Zone Landing Page",
+  "description": "Startup Exit Value Calculator - Compare tax implications of exits between Canada (LCGE) and USA (QSBS)",
   "scripts": {
     "dev": "bun --bun vite",
     "build": "bun run tsc -b && bun --bun vite build",
