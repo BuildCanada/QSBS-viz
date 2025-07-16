@@ -98,7 +98,7 @@ export function Hero() {
   const exampleCompanies = [
     { name: 'Small Business Acquisition', ownership: 50, exitValue: 4000000 },
     { name: 'Post-Series-A Exit', ownership: 40, exitValue: 100000000 },
-    { name: 'LP in fund that scores $300M return', ownership: 2, exitValue: 300000000, tooltip: 'LP (Limited Partner) - An investor in a venture capital fund. A typical moderate VC fund manages ~$100M with around 50 LPs contributing capital.' },
+    { name: 'LP in fund that scores $300M return', ownership: 2, exitValue: 300000000, tooltip: 'LP (Limited Partner) - An investor in a venture capital fund. A typical moderate VC fund manages ~$75M with around 50 LPs contributing capital.' },
     { name: 'Shopify', ownership: 10.3, exitValue: 2100000000, logo: '/logos/Shopify_logo_2018.svg.png' },
     { name: 'Airbnb', ownership: 11.4, exitValue: 86500000000, logo: '/logos/Airbnb_Logo.svg.png' }
   ]
@@ -210,10 +210,10 @@ export function Hero() {
                   How startup exits are taxed in Canada and the USA
                 </p>
                 <p className="text-base font-financier text-gray-800 leading-tight">
-                  The risk takers that put their livelihoods on the line to build great companies deserve to be rewarded. Entrepreneurs, early employees, and investors create companies that improve how we live and work, growing the economy in the process.
+                  The conventional wisdom has always been: "If you want to swing big, go to America—you'll be rewarded." This belief has driven Canada's most ambitious entrepreneurs to leave in droves, chasing the American dream. 
                   <br />
                   <br />
-                  Smart governments recognise this and reward these builders with competitive capital gains policies so they can keep the upside from the wealth they produce. But, today - unless you're among the rare few who can achieve massive exits and huge ownership stakes without a ton of investment - Canada's capital gains tax structure is deeply uncompetitive with the US pushing capital and our most talented founders to head South. This calculator reveals just how much more you'll pay in Canada versus the US.
+                  But is this true? We built a calculator to show you exactly how different exit scenarios impact founders. The results might surprise you.
                 </p>
               </WaveCard>
 
@@ -701,13 +701,13 @@ export function Hero() {
                   Big exit events are taxed favourably in Canada, but unfortunately there are never any big exits to tax.
                 </p>
                 <p className="text-base font-financier text-gray-800 leading-tight">
-                  Today, the tax gap between Canada and the United States creates a massive incentive to relocate to the US. For exits less than $100M, the US offers a dramatically better outcome for founders and investors. For exits greater than $100M, the US offers a better outcome for investors. As a result, it's no surprise then that we're seeing US investors ask Canadian startups to reincorporate south of the border simply to qualify for these incentives — shifting talent, capital, and future tax revenues out of the country. Founders who are ambitious and want to swing big suddenly find that the investors needed to back them do not exist north of the border.
+                  Today, the tax gap between Canada and the United States creates a massive incentive to relocate to the US. For exits less than $75M, the US offers a dramatically better outcome for founders and investors. For exits greater than $75M, the US offers a better outcome for investors. As a result, it's no surprise then that we're seeing US investors ask Canadian startups to reincorporate south of the border simply to qualify for these incentives — shifting talent, capital, and future tax revenues out of the country. Founders who are ambitious and want to swing big suddenly find that the investors needed to back them do not exist north of the border.
                   <br />
                   <br />
                   But there's reason for optimism. At the very top end of the market — multi-billion-dollar exits with significant individual ownership stakes — Canada is already reasonably competitive with the US. This suggests we don't need to start from scratch. If we can extend the same benefits that already exist for large-scale capital gains to earlier-stage companies and participants, we can close the gap quickly. Right now what Canada has done is built the top floors of a skyscraper, but forgot to build the 50 floors below.
                   <br />
                   <br />
-                  Doing so would reward those who take the earliest and hardest risks, and send a clear signal: Canada is serious about innovation and supporting builders. This would totally transform what it means to start and grow a company helping create an ecosystem of small and medium businesses that supercharge that improve the labour market, boost productivity and create the right environment for billion and even trillion dollar companies to emerge. 
+                  We must reward those who take the earliest and hardest risks, and send a clear signal: Canada is serious about innovation and supporting builders. This would totally transform what it means to start and grow a company helping create an ecosystem of small and medium businesses that supercharge that improve the labour market, boost productivity and create the right environment for billion and even trillion dollar companies to emerge. 
                   <br />
                   <br />
                   If we want to support the builders who make our country prosperous and grow the next generation of global winners at home, we need an approach that makes it worthwhile to stay in the country. To read more about this, see the Build Canada memo on reforming capital gains policy.
@@ -755,7 +755,7 @@ export function Hero() {
                         Investors in
                       </div>
                       <div className="text-xs font-medium font-soehne mb-2" style={{ color: '#28253B' }}>
-                        Small exit (&lt;$50M)
+                        Small exit (&lt;$75M)
                       </div>
                       <div className="text-xs text-gray-600">
                         Neutral
@@ -771,7 +771,7 @@ export function Hero() {
                         Founders in
                       </div>
                       <div className="text-xs font-medium font-soehne mb-2" style={{ color: '#28253B' }}>
-                        Small exit (&lt;$50M)
+                        Small exit (&lt;$75M)
                       </div>
                       <div className="text-xs text-blue-600">
                         🇺🇸 favoured
@@ -787,7 +787,7 @@ export function Hero() {
                         Investors in
                       </div>
                       <div className="text-xs font-medium font-soehne mb-2" style={{ color: '#28253B' }}>
-                        Large exit (&gt;$50M)
+                        Large exit (&gt;$75M)
                       </div>
                       <div className="text-xs text-blue-600">
                         🇺🇸 favoured
@@ -807,7 +807,7 @@ export function Hero() {
                           Founders in
                         </div>  
                         <div className="text-xs font-medium font-soehne mb-2" style={{ color: '#28253B' }}>
-                          Large exit (&gt;$50M)
+                          Large exit (&gt;$75M)
                         </div>
                         <div className="text-xs text-red-600">
                           🇨🇦 favoured
@@ -817,6 +817,31 @@ export function Hero() {
                   </div>
                 </WaveCard>
               </div>
+
+              {/* Built by Card */}
+              <WaveCard 
+                className="p-3 w-full"
+                style={{ 
+                  backgroundColor: 'rgba(245, 244, 252, 0.7)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.05)',
+                  borderRadius: '0'
+                }}
+              >
+                <p className="text-sm font-mono text-left" style={{ color: '#28253B' }}>
+                  Built by{' '}
+                  <a 
+                    href="https://jesselee.ca" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="underline hover:no-underline transition-all duration-200"
+                    style={{ color: '#28253B' }}
+                  >
+                    Jesse Lee
+                  </a>
+                </p>
+              </WaveCard>
             </div>
           </div>
         </motion.div>
