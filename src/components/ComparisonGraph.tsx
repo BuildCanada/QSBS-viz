@@ -154,7 +154,7 @@ export function ComparisonGraph({ ownershipPercentage, currency, selectedState, 
             borderDash: [5, 5],
             label: {
               display: true,
-              content: ['Individual LPs and investors will net below $40M', 'even in billion dollar exits'],
+              content: ['Individual LPs and investors will typically net below $40M', 'even in billion dollar exits'],
               position: 'end' as const,
               backgroundColor: 'rgba(255, 255, 255, 0.9)',
               color: '#6B7280',
