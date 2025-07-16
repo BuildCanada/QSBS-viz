@@ -683,7 +683,7 @@ export function Hero() {
                 Canada is friendly to big exits, but not to the people who make them happen.
               </h2>
               <p className="text-lg md:text-xl font-soehne text-gray-700 mb-4">
-                Why do we still see so many founders leaving Canada?
+                Big exit events are taxed favourably in Canada, but unfortunately there are never any big exits to tax.
               </p>
               <p className="text-base font-financier text-gray-800 leading-tight">
                 The truth is, this is not a story about founders. This is a story about investors. Imagine a $1B company. The founder owns 50% of the company, and a group of 20 investors own the other 50%. For the founder, they have a nice exit that is taxed favourably in Canada, but for the investors, on average they are getting $25M each. While any exit amount larger than $65M CAD is favourable for the founder, the investors are getting the short end of the stick. The United States' tax code, stemming from their QSBS policy, is very favourable for these investor outcomes, which enourages investment into the startups in the first place. It is no wonder why the US has such a vibrant startup ecosystem. Canada's version of QSBS, the LCGE (Lifetime Capital Gains Exemption) does not apply to investors, and even if it did, it does not come close to the $15M USD tax exemption that the US has.
