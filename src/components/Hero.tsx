@@ -2,7 +2,6 @@ import { motion } from 'framer-motion'
 import { WaveCard } from "@/components/WaveCard"
 import { SlotMachineNumber } from "@/components/SlotMachineNumber"
 import { CurrencyNumber } from "@/components/CurrencyNumber"
-import { ComparisonGraph } from "@/components/ComparisonGraph"
 import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { calculateQSBS, US_STATES } from '@/lib/qsbs'
 import { calculateLCGE, PROVINCES } from '@/lib/lcge'
