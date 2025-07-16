@@ -1,6 +1,6 @@
-# Aurora Foundry - Special Economic Zone Landing Page
+# Exit Value Calculator - Special Economic Zone Landing Page
 
-A modern, responsive landing page for Aurora Foundry, a next-generation Special Economic Zone (SEZ) inspired by successful models like Shenzhen.
+A modern, responsive landing page for Exit Value Calculator, a next-generation Special Economic Zone (SEZ) inspired by successful models like Shenzhen.
 
 ## 🚀 Technologies
 
@@ -13,7 +13,7 @@ A modern, responsive landing page for Aurora Foundry, a next-generation Special 
 ## 🏗️ Project Structure
 
 ```
-Aurora-Foundry/
+Exit-Value-Calculator/
 ├── src/
 │   ├── components/ui/     # shadcn/ui components
 │   ├── lib/              # Utility functions
@@ -79,7 +79,7 @@ bunx shadcn@latest add form
 
 ### Landing Page Sections
 
-1. **Navigation** - Sticky header with Aurora Foundry branding
+1. **Navigation** - Sticky header with Exit Value Calculator branding
 2. **Hero Section** - Compelling introduction with gradient text effects
 3. **Key Features** - Innovation Hub, Sustainable Development, Strategic Location
 4. **Economic Zones** - Specialized zones for different industries
@@ -129,10 +129,10 @@ The project can be deployed to any static hosting service:
 
 ## 📧 Contact
 
-For questions about Aurora Foundry SEZ:
+For questions about Exit Value Calculator SEZ:
 - Email: info@aurorafoundry.com
 - Phone: +1 (555) 123-4567
 
 ---
 
-**Aurora Foundry** - Building the future of economic development through innovation, sustainability, and strategic growth.
+**Exit Value Calculator** - Building the future of economic development through innovation, sustainability, and strategic growth.

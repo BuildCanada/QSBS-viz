@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { WaveCard } from "@/components/WaveCard"
 import { SlotMachineNumber } from "@/components/SlotMachineNumber"
 import { CurrencyNumber } from "@/components/CurrencyNumber"
+import { ComparisonGraph } from "@/components/ComparisonGraph"
 import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { calculateQSBS, US_STATES } from '@/lib/qsbs'
 import { calculateLCGE, PROVINCES } from '@/lib/lcge'
@@ -210,10 +211,12 @@ export function Hero() {
                   How startup exits are taxed in Canada and the USA
                 </p>
                 <p className="text-base font-financier text-gray-800 leading-tight">
-                  The conventional wisdom has always been: "If you want to swing big, go to America—you'll be rewarded." This belief has driven Canada's most ambitious entrepreneurs to leave in droves, chasing the American dream. 
+                  The risk takers that put their livelihoods on the line to build great companies deserve to be rewarded. Entrepreneurs, early employees, and investors create companies that improve how we live and work and grow the economy in the process. Smart governments recognise this and reward these builders with competitive capital gains policies so they can keep the upside from the wealth they produce. But, today - unless you're among the rare few with massive exits and huge ownership stakes - Canada's capital gains tax structure is deeply uncompetitive with the US pushing capital and our most talented founders to head South. This calculator reveals just how much more you'll pay in Canada versus the US.
                   <br />
                   <br />
-                  But is this true? We built a calculator to show you exactly how different exit scenarios impact founders. The results might surprise you.
+                  <span className="font-bold">
+                    The results might surprise you.
+                  </span>
                 </p>
               </WaveCard>
 
@@ -404,8 +407,8 @@ export function Hero() {
                     backgroundColor: '#EBF4FF',
                   }}
                 />
-                <div className="relative z-10">
-                  <h3 className="text-xl font-semibold mb-4 font-soehne" style={{ color: '#28253B' }}>
+                <div className="relative z-10 h-full flex flex-col justify-between">
+                  <h3 className="text-xl font-semibold font-soehne" style={{ color: '#28253B' }}>
                     🇺🇸 Your take-home in{' '}
                     <span className="relative inline-block">
                       <Select value={selectedState} onValueChange={(value) => setSelectedState(value)}>
@@ -440,7 +443,6 @@ export function Hero() {
                       ></span>
                     </span>
                   </h3>
-                  <hr className="border-gray-300 mb-4" />
                   <div className="space-y-2 text-sm font-mono" style={{ color: '#28253B' }}>
                     <div className="flex justify-between">
                       <span>Your Exit Value:</span>
@@ -515,8 +517,8 @@ export function Hero() {
                     backgroundColor: '#FEF2F2',
                   }}
                 />
-                <div className="relative z-10">
-                  <h3 className="text-xl font-semibold mb-4 font-soehne" style={{ color: '#28253B' }}>
+                <div className="relative z-10 h-full flex flex-col justify-between">
+                  <h3 className="text-xl font-semibold font-soehne" style={{ color: '#28253B' }}>
                   🇨🇦 Your take-home in{' '}
                   <span className="relative inline-block">
                     <Select value={selectedProvince} onValueChange={(value) => setSelectedProvince(value)}>
@@ -551,7 +553,6 @@ export function Hero() {
                     ></span>
                   </span>
                 </h3>
-                <hr className="border-gray-300 mb-4" />
                 <div className="space-y-2 text-sm font-mono" style={{ color: '#28253B' }}>
                   <div className="flex justify-between">
                     <span>Your Exit Value:</span>
@@ -599,70 +600,118 @@ export function Hero() {
                 </div>
               </div>
             </motion.div>
+
+            {/* Comparison Card */}
+            <motion.div 
+              className="relative p-6 w-full overflow-hidden"
+              style={{ 
+                backgroundColor: qsbsResults.afterTaxProceeds > lcgeResults.afterTaxAmount ? '#EBF4FF' : '#FEF2F2',
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.05)'
+              }}
+              key="comparison-card"
+            >
+              {/* Animated border */}
+              <motion.div
+                key="comparison-border"
+                className="absolute inset-0 opacity-75"
+                style={{
+                  background: qsbsResults.afterTaxProceeds > lcgeResults.afterTaxAmount ? 
+                    'linear-gradient(90deg, transparent, #3B82F6, #06B6D4, #3B82F6, transparent)' :
+                    'linear-gradient(90deg, transparent, #DC2626, #EF4444, #DC2626, transparent)',
+                  backgroundSize: '200% 100%',
+                }}
+                animate={{
+                  backgroundPosition: ['0% 0%', '200% 0%'],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "linear"
+                }}
+              />
+              {/* Border mask */}
+              <div 
+                className="absolute inset-[2px]"
+                style={{ 
+                  backgroundColor: qsbsResults.afterTaxProceeds > lcgeResults.afterTaxAmount ? '#EBF4FF' : '#FEF2F2',
+                }}
+              />
+              <div className="relative z-10">
+                <h3 className="text-xl font-semibold font-soehne" style={{ color: '#28253B' }}>
+                  You would take home{' '}
+                  <span 
+                    className={qsbsResults.afterTaxProceeds > lcgeResults.afterTaxAmount ? 'text-blue-600' : 'text-red-600'}
+                    style={{ color: qsbsResults.afterTaxProceeds > lcgeResults.afterTaxAmount ? '#2563eb' : '#dc2626' }}
+                  >
+                    <CurrencyNumber 
+                      value={Math.abs(qsbsResults.afterTaxProceeds - lcgeResults.afterTaxAmount)} 
+                      currency={currency} 
+                      className="font-semibold"
+                      currencyAfter={true}
+                      fontFamily="soehne"
+                    />
+                  </span>
+                  {' '}more in{' '}
+                  <span 
+                    className={qsbsResults.afterTaxProceeds > lcgeResults.afterTaxAmount ? 'text-blue-600' : 'text-red-600'}
+                    style={{ color: qsbsResults.afterTaxProceeds > lcgeResults.afterTaxAmount ? '#2563eb' : '#dc2626' }}
+                  >
+                    {qsbsResults.afterTaxProceeds > lcgeResults.afterTaxAmount ? 
+                      `${US_STATES[selectedState].name}, USA` : 
+                      `${PROVINCES[selectedProvince].name}, Canada`
+                    }
+                  </span>
+                </h3>
+              </div>
+            </motion.div>
             </div>
           </div>
 
-          {/* Comparison - Full width card */}
-          <motion.div 
-            className="relative p-6 w-full overflow-hidden"
-            style={{ 
-              backgroundColor: qsbsResults.afterTaxProceeds > lcgeResults.afterTaxAmount ? '#EBF4FF' : '#FEF2F2',
-              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.05)'
-            }}
-          >
-            {/* Animated border */}
-            <motion.div
-              className="absolute inset-0 opacity-75"
-              style={{
-                background: qsbsResults.afterTaxProceeds > lcgeResults.afterTaxAmount ? 
-                  'linear-gradient(90deg, transparent, #3B82F6, #06B6D4, #3B82F6, transparent)' :
-                  'linear-gradient(90deg, transparent, #DC2626, #EF4444, #DC2626, transparent)',
-                backgroundSize: '200% 100%',
-              }}
-              animate={{
-                backgroundPosition: ['0% 0%', '200% 0%'],
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: "linear"
-              }}
-            />
-            {/* Border mask */}
-            <div 
-              className="absolute inset-[2px]"
+          {/* Second Row - Analysis Section */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+            {/* Left Column - Existing Analysis Card */}
+            <WaveCard 
+              className="p-6 w-full"
               style={{ 
-                backgroundColor: qsbsResults.afterTaxProceeds > lcgeResults.afterTaxAmount ? '#EBF4FF' : '#FEF2F2',
+                backgroundColor: 'rgba(245, 244, 252, 0.7)',
+                backdropFilter: 'blur(8px)',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.05)'
               }}
-            />
-            <div className="relative z-10">
-              <h3 className="text-xl font-semibold font-soehne" style={{ color: '#28253B' }}>
-                You would take home{' '}
-                <span 
-                  className={qsbsResults.afterTaxProceeds > lcgeResults.afterTaxAmount ? 'text-blue-600' : 'text-red-600'}
-                  style={{ color: qsbsResults.afterTaxProceeds > lcgeResults.afterTaxAmount ? '#2563eb' : '#dc2626' }}
-                >
-                  <CurrencyNumber 
-                    value={Math.abs(qsbsResults.afterTaxProceeds - lcgeResults.afterTaxAmount)} 
-                    currency={currency} 
-                    className="font-semibold"
-                    currencyAfter={true}
-                    fontFamily="soehne"
-                  />
-                </span>
-                {' '}more in{' '}
-                <span 
-                  className={qsbsResults.afterTaxProceeds > lcgeResults.afterTaxAmount ? 'text-blue-600' : 'text-red-600'}
-                  style={{ color: qsbsResults.afterTaxProceeds > lcgeResults.afterTaxAmount ? '#2563eb' : '#dc2626' }}
-                >
-                  {qsbsResults.afterTaxProceeds > lcgeResults.afterTaxAmount ? 
-                    `${US_STATES[selectedState].name}, USA` : 
-                    `${PROVINCES[selectedProvince].name}, Canada`
-                  }
-                </span>
-              </h3>
-            </div>
-          </motion.div>
+            >
+              <h2 className="text-3xl md:text-4xl font-semibold font-soehne mb-2" style={{ color: '#28253B' }}>
+                So... It seems that big $65M+ exits are actually more favourable for the founder in Canada.
+              </h2>
+              <p className="text-lg md:text-xl font-soehne text-gray-700 mb-4">
+                Why do we still see so many founders leaving Canada?
+              </p>
+              <p className="text-base font-financier text-gray-800 leading-tight">
+                The truth is, this is not a story about founders. This is a story about investors. Imagine a $1B company. The founder owns 50% of the company, and a group of 20 investors own the other 50%. For the founder, they have a nice exit that is taxed favourably in Canada, but for the investors, on average they are getting $25M each. While any exit amount larger than $65M CAD is favourable for the founder, the investors are getting the short end of the stick. The United States' tax code, stemming from their QSBS policy, is very favourable for these investor outcomes, which enourages investment into the startups in the first place. It is no wonder why the US has such a vibrant startup ecosystem. Canada's version of QSBS, the LCGE (Lifetime Capital Gains Exemption) does not apply to investors, and even if it did, it does not come close to the $15M USD tax exemption that the US has.
+                <br />
+                <br />
+                We love to talk about founder stories, but without their investors, these companies would not exist. Without investment, Apple never would have gotten off the ground. Microsoft would have never become the behemoth it is today. Google would have been stuck in the garage. The Canadian ecosystem lacks incentives for these investors to pour money into risky startups, so no wonder why every company flees south for funding. There just isn't any money here! The true reason is that the founders are leaving Canada because they are not able to raise the capital they need to build their companies, so they go to where they can!
+              </p>
+            </WaveCard>
+
+            {/* Right Column - Comparison Graph */}
+            <WaveCard 
+              className="p-6 w-full"
+              style={{ 
+                backgroundColor: 'rgba(245, 244, 252, 0.7)',
+                backdropFilter: 'blur(8px)',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.05)',
+                minHeight: '400px'
+              }}
+            >
+              <ComparisonGraph 
+                ownershipPercentage={ownershipPercentage}
+                currency={currency}
+                selectedState={selectedState}
+                selectedProvince={selectedProvince}
+              />
+            </WaveCard>
+          </div>
         </motion.div>
       </div>
     </section>
