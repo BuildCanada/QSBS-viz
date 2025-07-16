@@ -680,7 +680,7 @@ export function Hero() {
               }}
             >
               <h2 className="text-3xl md:text-4xl font-semibold font-soehne mb-2" style={{ color: '#28253B' }}>
-                So... It seems that big $65M+ exits are actually more favourable for the founder in Canada.
+                Canada is friendly to big exits, but not to the people who make them happen.
               </h2>
               <p className="text-lg md:text-xl font-soehne text-gray-700 mb-4">
                 Why do we still see so many founders leaving Canada?
