@@ -36,7 +36,7 @@ export function Info() {
             
             <div className="space-y-4 text-gray-200 font-financier">
               <p>
-                <strong className="text-white">What it is:</strong> A powerful US tax provision that allows entrepreneurs to exclude up to $10 million in capital gains from federal taxes when selling qualifying small business stock.
+                <strong className="text-white">What it is:</strong> A powerful US tax provision that allows entrepreneurs to exclude up to $15 million USD in capital gains from federal taxes when selling qualifying small business stock.
               </p>
               
               <p>
@@ -51,9 +51,8 @@ export function Info() {
               </ul>
 
               <p>
-                <strong className="text-white">Tax Benefit:</strong> Up to $10 million (or 10x your cost basis, whichever is greater) of capital gains are completely exempt from federal taxes. Remaining gains taxed at 20% long-term capital gains rate.
+                <strong className="text-white">Tax Benefit:</strong> Up to $15 million USD (or 10x your cost basis, whichever is greater) of capital gains are completely exempt from federal taxes. Remaining gains taxed at 20% long-term capital gains rate.
               </p>
-
               <div className="bg-blue-800 p-4 rounded border border-blue-300 mt-4">
                 <p className="text-sm font-medium text-blue-200">
                   💡 Best for: Canadian entrepreneurs willing to incorporate in the US and meet the 5-year holding requirement for maximum tax efficiency.

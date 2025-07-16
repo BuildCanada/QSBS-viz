@@ -72,7 +72,7 @@ export function FontGuide() {
             <div>
               <p className="font-financier text-sm text-white/60 mb-2">Large Body - xl (20px)</p>
               <p className="font-financier text-xl text-white">
-                The Qualified Small Business Stock (QSBS) exemption allows eligible shareholders to exclude up to $10 million in gains from federal taxes when selling qualifying small business stock.
+                The Qualified Small Business Stock (QSBS) exemption allows eligible shareholders to exclude up to $15 million USD in gains from federal taxes when selling qualifying small business stock.
               </p>
             </div>
             

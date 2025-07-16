@@ -97,14 +97,14 @@ export function Hero() {
 
   // Example company data
   const exampleCompanies = [
-    { name: 'DoorDash', ownership: 5.2, exitValue: 60200000000, logo: '/logos/DoorDash-logo.png' },
-    { name: 'Airbnb', ownership: 11.4, exitValue: 86500000000, logo: '/logos/Airbnb_Logo.svg.png' },
+    { name: 'Small Business Acquisition', ownership: 50, exitValue: 4000000 },
+    { name: 'Post-Series-A Exit', ownership: 40, exitValue: 100000000 },
+    { name: 'LP in fund that scores $300M return', ownership: 2, exitValue: 300000000, tooltip: 'LP (Limited Partner) - An investor in a venture capital fund. A typical moderate VC fund manages ~$100M with around 50 LPs contributing capital.' },
     { name: 'Shopify', ownership: 10.3, exitValue: 2100000000, logo: '/logos/Shopify_logo_2018.svg.png' },
-    { name: 'Tesla', ownership: 28.3, exitValue: 1600000000, logo: '/logos/tesla-logo-png.png' },
-    { name: 'Palantir', ownership: 29.8, exitValue: 15800000000, logo: '/logos/Palantir_company_logo.png' }
+    { name: 'Airbnb', ownership: 11.4, exitValue: 86500000000, logo: '/logos/Airbnb_Logo.svg.png' }
   ]
 
-  const handleExampleClick = (company: typeof exampleCompanies[0]) => {
+  const handleExampleClick = (company: typeof exampleCompanies[0] & { tooltip?: string; logo?: string }) => {
     setOwnershipPercentage(company.ownership)
     setExitValue(company.exitValue.toString())
     // Set currency to USD since these are USD values
@@ -211,12 +211,10 @@ export function Hero() {
                   How startup exits are taxed in Canada and the USA
                 </p>
                 <p className="text-base font-financier text-gray-800 leading-tight">
-                  The risk takers that put their livelihoods on the line to build great companies deserve to be rewarded. Entrepreneurs, early employees, and investors create companies that improve how we live and work and grow the economy in the process. Smart governments recognise this and reward these builders with competitive capital gains policies so they can keep the upside from the wealth they produce. But, today - unless you're among the rare few with massive exits and huge ownership stakes - Canada's capital gains tax structure is deeply uncompetitive with the US pushing capital and our most talented founders to head South. This calculator reveals just how much more you'll pay in Canada versus the US.
+                  The risk takers that put their livelihoods on the line to build great companies deserve to be rewarded. Entrepreneurs, early employees, and investors create companies that improve how we live and work, growing the economy in the process.
                   <br />
                   <br />
-                  <span className="font-bold">
-                    The results might surprise you.
-                  </span>
+                  Smart governments recognise this and reward these builders with competitive capital gains policies so they can keep the upside from the wealth they produce. But, today - unless you're among the rare few who can achieve massive exits and huge ownership stakes without a ton of investment - Canada's capital gains tax structure is deeply uncompetitive with the US pushing capital and our most talented founders to head South. This calculator reveals just how much more you'll pay in Canada versus the US.
                 </p>
               </WaveCard>
 
@@ -349,25 +347,42 @@ export function Hero() {
                     <h3 className="text-sm font-medium text-gray-700 font-mono mb-3">
                       Example exits
                     </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2">
-                      {exampleCompanies.map((company) => (
-                        <button
-                          key={company.name}
-                          onClick={() => handleExampleClick(company)}
-                          className="p-4 bg-white/50 hover:bg-white/80 border border-gray-200 hover:border-gray-300 rounded-lg transition-all duration-200 hover:shadow-sm group flex items-center justify-center"
-                          style={{ 
-                            backgroundColor: 'rgba(255, 255, 255, 0.6)',
-                            backdropFilter: 'blur(4px)',
-                            aspectRatio: '3/2'
-                          }}
-                        >
-                          <img 
-                            src={company.logo} 
-                            alt={`${company.name} logo`}
-                            className="max-w-full max-h-full object-contain opacity-80 group-hover:opacity-100 transition-opacity"
-                          />
-                        </button>
-                      ))}
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                      {exampleCompanies.map((company) => {
+                        const button = (
+                          <button
+                            key={company.name}
+                            onClick={() => handleExampleClick(company)}
+                            className="p-4 bg-white/50 hover:bg-white/80 border border-gray-200 hover:border-gray-300 rounded-lg transition-all duration-200 hover:shadow-sm group flex items-center justify-center text-center h-20 md:h-auto md:min-h-[80px]"
+                            style={{ 
+                              backgroundColor: 'rgba(255, 255, 255, 0.6)',
+                              backdropFilter: 'blur(4px)'
+                            }}
+                          >
+                            {company.logo ? (
+                              <img 
+                                src={company.logo} 
+                                alt={`${company.name} logo`}
+                                className="max-w-full max-h-full object-contain opacity-80 group-hover:opacity-100 transition-opacity"
+                              />
+                            ) : (
+                              <span className="text-sm font-medium text-gray-800 group-hover:text-gray-900 transition-colors">
+                                {company.name}
+                              </span>
+                            )}
+                          </button>
+                        );
+                        
+                        return company.tooltip ? (
+                          <Tooltip 
+                            key={company.name} 
+                            content={company.tooltip}
+                            position={company.name === 'LP in fund that scores $300M return' ? 'bottom' : 'right'}
+                          >
+                            {button}
+                          </Tooltip>
+                        ) : button;
+                      })}
                     </div>
                   </div>
                 </div>
@@ -443,7 +458,7 @@ export function Hero() {
                       ></span>
                     </span>
                   </h3>
-                  <div className="space-y-2 text-sm font-mono" style={{ color: '#28253B' }}>
+                  <div className="space-y-2 text-sm font-mono pt-8" style={{ color: '#28253B' }}>
                     <div className="flex justify-between">
                       <span>Your Exit Value:</span>
                       <CurrencyNumber value={qsbsResults.personalExitValue} currency={currency} className="font-bold text-gray-800" />
@@ -553,7 +568,7 @@ export function Hero() {
                     ></span>
                   </span>
                 </h3>
-                <div className="space-y-2 text-sm font-mono" style={{ color: '#28253B' }}>
+                <div className="space-y-2 text-sm font-mono pt-8" style={{ color: '#28253B' }}>
                   <div className="flex justify-between">
                     <span>Your Exit Value:</span>
                     <CurrencyNumber value={personalExitValue} currency={currency} className="font-bold text-gray-800" />
@@ -667,50 +682,143 @@ export function Hero() {
             </div>
           </div>
 
-          {/* Second Row - Analysis Section */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
-            {/* Left Column - Existing Analysis Card */}
-            <WaveCard 
-              className="p-6 w-full"
-              style={{ 
-                backgroundColor: 'rgba(245, 244, 252, 0.7)',
-                backdropFilter: 'blur(8px)',
-                border: '1px solid rgba(255, 255, 255, 0.3)',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.05)'
-              }}
-            >
-              <h2 className="text-3xl md:text-4xl font-semibold font-soehne mb-2" style={{ color: '#28253B' }}>
-                Canada is friendly to big exits, but not to the people who make them happen.
-              </h2>
-              <p className="text-lg md:text-xl font-soehne text-gray-700 mb-4">
-                Big exit events are taxed favourably in Canada, but unfortunately there are never any big exits to tax.
-              </p>
-              <p className="text-base font-financier text-gray-800 leading-tight">
-                The truth is, this is not a story about founders. This is a story about investors. Imagine a $1B company. The founder owns 50% of the company, and a group of 20 investors own the other 50%. For the founder, they have a nice exit that is taxed favourably in Canada, but for the investors, on average they are getting $25M each. While any exit amount larger than $65M CAD is favourable for the founder, the investors are getting the short end of the stick. The United States' tax code, stemming from their QSBS policy, is very favourable for these investor outcomes, which enourages investment into the startups in the first place. It is no wonder why the US has such a vibrant startup ecosystem. Canada's version of QSBS, the LCGE (Lifetime Capital Gains Exemption) does not apply to investors, and even if it did, it does not come close to the $15M USD tax exemption that the US has.
-                <br />
-                <br />
-                We love to talk about founder stories, but without their investors, these companies would not exist. Without investment, Apple never would have gotten off the ground. Microsoft would have never become the behemoth it is today. Google would have been stuck in the garage. The Canadian ecosystem lacks incentives for these investors to pour money into risky startups, so no wonder why every company flees south for funding. There just isn't any money here! The true reason is that the founders are leaving Canada because they are not able to raise the capital they need to build their companies, so they go to where they can!
-              </p>
-            </WaveCard>
-
-            {/* Right Column - Comparison Graph */}
-            <WaveCard 
-              className="p-6 w-full"
-              style={{ 
-                backgroundColor: 'rgba(245, 244, 252, 0.7)',
-                backdropFilter: 'blur(8px)',
-                border: '1px solid rgba(255, 255, 255, 0.3)',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.05)',
-                minHeight: '400px'
-              }}
-            >
-              <ComparisonGraph 
-                ownershipPercentage={ownershipPercentage}
-                currency={currency}
-                selectedState={selectedState}
-                selectedProvince={selectedProvince}
-              />
-            </WaveCard>
+          {/* Analysis Section */}
+          <div className="mt-3 grid grid-cols-1 md:grid-cols-4 gap-3">
+            {/* Analysis Card - 3 columns */}
+            <div className="col-span-1 md:col-span-3">
+              <WaveCard 
+                className="p-6 w-full h-full"
+                style={{ 
+                  backgroundColor: 'rgba(245, 244, 252, 0.7)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.05)'
+                }}
+              >
+                <h2 className="text-3xl md:text-4xl font-semibold font-soehne mb-2" style={{ color: '#28253B' }}>
+                  So what does this mean? 
+                </h2>
+                <p className="text-lg md:text-xl font-soehne text-gray-700 mb-4">
+                  Big exit events are taxed favourably in Canada, but unfortunately there are never any big exits to tax.
+                </p>
+                <p className="text-base font-financier text-gray-800 leading-tight">
+                  Today, the tax gap between Canada and the United States creates a massive incentive to relocate to the US. For exits less than $100M, the US offers a dramatically better outcome for founders and investors. For exits greater than $100M, the US offers a better outcome for investors. As a result, it's no surprise then that we're seeing US investors ask Canadian startups to reincorporate south of the border simply to qualify for these incentives — shifting talent, capital, and future tax revenues out of the country. Founders who are ambitious and want to swing big suddenly find that the investors needed to back them do not exist north of the border.
+                  <br />
+                  <br />
+                  But there's reason for optimism. At the very top end of the market — multi-billion-dollar exits with significant individual ownership stakes — Canada is already reasonably competitive with the US. This suggests we don't need to start from scratch. If we can extend the same benefits that already exist for large-scale capital gains to earlier-stage companies and participants, we can close the gap quickly. Right now what Canada has done is built the top floors of a skyscraper, but forgot to build the 50 floors below.
+                  <br />
+                  <br />
+                  Doing so would reward those who take the earliest and hardest risks, and send a clear signal: Canada is serious about innovation and supporting builders. This would totally transform what it means to start and grow a company helping create an ecosystem of small and medium businesses that supercharge that improve the labour market, boost productivity and create the right environment for billion and even trillion dollar companies to emerge. 
+                  <br />
+                  <br />
+                  If we want to support the builders who make our country prosperous and grow the next generation of global winners at home, we need an approach that makes it worthwhile to stay in the country. To read more about this, see the Build Canada memo on reforming capital gains policy.
+                </p>
+              </WaveCard>
+            </div>
+            
+            {/* Quadrant Card - 1 column */}
+            <div className="col-span-1 md:col-span-1 space-y-3">
+              {/* Title Card */}
+              <WaveCard 
+                className="p-3 w-full"
+                style={{ 
+                  backgroundColor: 'rgba(245, 244, 252, 0.7)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.05)',
+                  borderRadius: '0'
+                }}
+              >
+                <h3 className="text-lg font-semibold font-soehne text-center" style={{ color: '#28253B' }}>
+                  Who Has Advantage?
+                </h3>
+              </WaveCard>
+              
+              {/* Square Quadrant */}
+              <div className="aspect-square w-full">
+                <WaveCard 
+                  className="p-0 w-full h-full"
+                  style={{ 
+                    backgroundColor: 'rgba(245, 244, 252, 0.7)',
+                    backdropFilter: 'blur(8px)',
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.05)',
+                    borderRadius: '0'
+                  }}
+                >
+                  <div className="grid grid-cols-2 gap-0 h-full">
+                    {/* Top Left - Investors in small exit */}
+                    <div 
+                      className="p-3 text-center flex flex-col justify-center aspect-square border-r border-b border-gray-300"
+                      style={{ backgroundColor: 'rgba(245, 244, 252, 0.8)' }}
+                    >
+                      <div className="text-xs font-medium font-soehne mb-1" style={{ color: '#28253B' }}>
+                        Investors in
+                      </div>
+                      <div className="text-xs font-medium font-soehne mb-2" style={{ color: '#28253B' }}>
+                        Small exit (&lt;$50M)
+                      </div>
+                      <div className="text-xs text-gray-600">
+                        Neutral
+                      </div>
+                    </div>
+                    
+                    {/* Top Right - Founders in small exit */}
+                    <div 
+                      className="p-3 text-center flex flex-col justify-center aspect-square border-b border-gray-300"
+                      style={{ backgroundColor: '#EBF4FF' }}
+                    >
+                      <div className="text-xs font-medium font-soehne mb-1" style={{ color: '#28253B' }}>
+                        Founders in
+                      </div>
+                      <div className="text-xs font-medium font-soehne mb-2" style={{ color: '#28253B' }}>
+                        Small exit (&lt;$50M)
+                      </div>
+                      <div className="text-xs text-blue-600">
+                        🇺🇸 favoured
+                      </div>
+                    </div>
+                    
+                    {/* Bottom Left - Investors in large exit */}
+                    <div 
+                      className="p-3 text-center flex flex-col justify-center aspect-square border-r border-gray-300"
+                      style={{ backgroundColor: '#EBF4FF' }}
+                    >
+                      <div className="text-xs font-medium font-soehne mb-1" style={{ color: '#28253B' }}>
+                        Investors in
+                      </div>
+                      <div className="text-xs font-medium font-soehne mb-2" style={{ color: '#28253B' }}>
+                        Large exit (&gt;$50M)
+                      </div>
+                      <div className="text-xs text-blue-600">
+                        🇺🇸 favoured
+                      </div>
+                    </div>
+                    
+                    {/* Bottom Right - Founders in large exit */}
+                    <Tooltip 
+                      content="These large exits typically don't happen in Canada, because investors often ask the founders to move to the US first."
+                      position="left"
+                    >
+                      <div 
+                        className="p-3 text-center flex flex-col justify-center aspect-square cursor-help"
+                        style={{ backgroundColor: '#FEF2F2' }}
+                      >
+                        <div className="text-xs font-medium font-soehne mb-1" style={{ color: '#28253B' }}>
+                          Founders in
+                        </div>  
+                        <div className="text-xs font-medium font-soehne mb-2" style={{ color: '#28253B' }}>
+                          Large exit (&gt;$50M)
+                        </div>
+                        <div className="text-xs text-red-600">
+                          🇨🇦 favoured
+                        </div>
+                      </div>
+                    </Tooltip>
+                  </div>
+                </WaveCard>
+              </div>
+            </div>
           </div>
         </motion.div>
       </div>
