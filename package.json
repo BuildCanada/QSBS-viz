@@ -6,7 +6,8 @@
   "description": "Startup Exit Value Calculator - Compare tax implications of exits between Canada (LCGE) and USA (QSBS)",
   "scripts": {
     "dev": "bun --bun vite",
-    "build": "bun run tsc -b && bun --bun vite build",
+    "build": "bun run tsc -b && bun --bun vite build && bun run postbuild",
+    "postbuild": "mkdir -p dist-server/exit-tax-calculator && cp -r dist/* dist-server/exit-tax-calculator/ && echo 'Build complete! Files ready for deployment at /exit-tax-calculator'",
     "lint": "bun run eslint .",
     "preview": "bun --bun vite preview"
   },

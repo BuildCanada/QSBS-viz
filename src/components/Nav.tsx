@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { AnimatedLogo } from './AnimatedLogo'
 import { WaveCard } from './WaveCard'
 
@@ -34,8 +35,8 @@ export const Nav: React.FC = () => {
       >
         <div className="flex items-stretch w-full">
           {/* Brand/Logo */}
-          <a 
-            href="/" 
+          <Link 
+            to="/" 
             aria-current="page" 
             className="flex items-center transition-opacity hover:opacity-80 p-4"
             style={{
@@ -50,7 +51,7 @@ export const Nav: React.FC = () => {
             }}
           >
             <AnimatedLogo mousePosition={mousePosition} />
-          </a>
+          </Link>
         </div>
       </nav>
     </WaveCard>
