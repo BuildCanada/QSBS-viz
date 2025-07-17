@@ -213,7 +213,7 @@ export function Hero() {
                   The conventional wisdom has always been: "If you want to swing big, go to America—you'll be rewarded." This belief has driven Canada's most ambitious entrepreneurs to leave in droves, chasing the American dream. 
                   <br />
                   <br />
-                  But is this true? We built a calculator to show you exactly how different exit scenarios impact founders. The results might surprise you.
+                  But is this true? This calculator lets you compare exit scenarios between the countries. The results might surprise you.
                 </p>
               </WaveCard>
 
@@ -704,7 +704,7 @@ export function Hero() {
                   Big exit events are taxed favourably in Canada, but unfortunately there are never any big exits to tax.
                 </p>
                 <p className="text-base font-financier text-gray-800 leading-tight">
-                Today, the tax gap between Canada and the United States creates a massive incentive to relocate to the US. For exits less than $75M, the US offers a dramatically better outcome for founders and investors. For exits greater than $75M, the US offers a better outcome for investors. Furthermore, QSBS applies PER business, while LCGE only applies once for an individual, further discouraging entrepreneurs who know how to do it from doing it again, and also discouraging investors from investing in multiple businesses. It's no surprise then that we're seeing US investors ask Canadian startups to reincorporate south of the border — losing talent, capital, and future tax revenues. Founders who are ambitious and want to swing big suddenly find that the investors needed to back them do not exist north of the border.
+                Today, the tax gap between Canada and the United States creates a massive incentive to relocate to the US. For exits less than $75M, the US offers a dramatically better outcome for founders and investors. For exits greater than $75M, the US offers a better outcome for investors. Furthermore, QSBS applies <em>per</em> business, while LCGE only applies once for an individual. This further discourages entrepreneurs who know how to do it from doing it again, and also discourages investors from investing in multiple businesses. It's no surprise then that we're seeing US investors ask Canadian startups to reincorporate south of the border — losing talent, capital, and future tax revenues. Founders who are ambitious and want to swing big suddenly find that the investors needed to back them do not exist north of the border.
                 <br />
                 <br />
                 But there's reason for optimism. At the very top end of the market (multi-billion-dollar exits) Canada is already reasonably competitive for founders. This suggests we don't need to start from scratch. If we can extend the same benefits that already exist for large-scale capital gains to earlier-stage companies and participants, we can close the gap quickly. Right now what Canada has done is built the top floors of a skyscraper, but has forgotten to build the 50 floors below.
