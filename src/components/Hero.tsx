@@ -99,8 +99,8 @@ export function Hero() {
     { name: 'Small Business Acquisition', ownership: 50, exitValue: 4000000 },
     { name: 'Post-Series-A Exit', ownership: 40, exitValue: 100000000 },
     { name: 'LP in fund that scores $300M return', ownership: 2, exitValue: 300000000, tooltip: 'LP (Limited Partner) - An investor in a venture capital fund. A typical moderate VC fund manages ~$75M with around 50 LPs contributing capital.' },
-    { name: 'Shopify', ownership: 10.3, exitValue: 2100000000, logo: '/logos/Shopify_logo_2018.svg.png' },
-    { name: 'Airbnb', ownership: 11.4, exitValue: 86500000000, logo: '/logos/Airbnb_Logo.svg.png' }
+    { name: 'Shopify', ownership: 10.3, exitValue: 2100000000, logo: '/Shopify_logo_2018.svg.png' },
+    { name: 'Airbnb', ownership: 11.4, exitValue: 86500000000, logo: '/Airbnb_Logo.svg.png' }
   ]
 
   const handleExampleClick = (company: typeof exampleCompanies[0] & { tooltip?: string; logo?: string }) => {
