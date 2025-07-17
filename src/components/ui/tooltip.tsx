@@ -11,11 +11,30 @@ interface TooltipProps {
 export function Tooltip({ content, children, className = '', position = 'right' }: TooltipProps) {
   const [isVisible, setIsVisible] = useState(false)
   const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 })
+  const [isMobile, setIsMobile] = useState(false)
   const triggerRef = useRef<HTMLDivElement>(null)
   const tooltipRef = useRef<HTMLDivElement>(null)
 
+  // Detect mobile screen size
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768) // Tailwind's md breakpoint
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
   useEffect(() => {
     if (isVisible && triggerRef.current) {
+      // On mobile, position at top of screen
+      if (isMobile) {
+        setTooltipPosition({ top: 16, left: 16 }) // 16px from top and left
+        return
+      }
+
+      // Desktop positioning logic (existing)
       const rect = triggerRef.current.getBoundingClientRect()
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop
       const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
@@ -37,11 +56,11 @@ export function Tooltip({ content, children, className = '', position = 'right' 
       
       setTooltipPosition({ top, left })
     }
-  }, [isVisible, position])
+  }, [isVisible, position, isMobile])
 
   // Second effect to adjust positioning after tooltip is rendered and we can measure it
   useEffect(() => {
-    if (isVisible && triggerRef.current && tooltipRef.current) {
+    if (isVisible && triggerRef.current && tooltipRef.current && !isMobile) {
       const triggerRect = triggerRef.current.getBoundingClientRect()
       const tooltipRect = tooltipRef.current.getBoundingClientRect()
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop
@@ -64,9 +83,14 @@ export function Tooltip({ content, children, className = '', position = 'right' 
       
       setTooltipPosition({ top, left })
     }
-  }, [isVisible, position, content]) // Re-run when content changes too
+  }, [isVisible, position, content, isMobile]) // Re-run when content changes too
 
   const getArrowStyles = () => {
+    // Hide arrows on mobile since tooltip is at top of screen
+    if (isMobile) {
+      return { display: 'none' }
+    }
+
     if (position === 'bottom') {
       return {
         position: 'absolute' as const,
@@ -113,14 +137,15 @@ export function Tooltip({ content, children, className = '', position = 'right' 
     <div 
       ref={tooltipRef}
       style={{
-        position: 'absolute',
-        top: tooltipPosition.top,
-        left: tooltipPosition.left,
+        position: isMobile ? 'fixed' : 'absolute', // Fixed for mobile, absolute for desktop
+        top: isMobile ? '16px' : tooltipPosition.top,
+        left: isMobile ? '16px' : tooltipPosition.left,
+        right: isMobile ? '16px' : 'auto', // Full width on mobile
         zIndex: 99999,
         pointerEvents: 'none'
       }}
     >
-      <div className="px-4 py-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-lg w-80 whitespace-normal">
+      <div className={`px-4 py-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-lg whitespace-normal ${isMobile ? 'w-full' : 'w-80'}`}>
         {content}
       </div>
       {/* Arrow */}
@@ -134,6 +159,11 @@ export function Tooltip({ content, children, className = '', position = 'right' 
         ref={triggerRef}
         onMouseEnter={() => setIsVisible(true)}
         onMouseLeave={() => setIsVisible(false)}
+        onTouchStart={() => setIsVisible(true)} // Add touch support for mobile
+        onTouchEnd={() => {
+          // Hide tooltip after a delay on mobile
+          setTimeout(() => setIsVisible(false), 3000)
+        }}
         className={className}
       >
         {children}

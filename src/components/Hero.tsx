@@ -587,7 +587,7 @@ export function Hero() {
                   </div>
                   <div className="flex justify-between">
                     <div className="flex items-center gap-1">
-                      <span>Taxable Gains (50%):</span>
+                      <span>Taxable Gains:</span>
                       <Tooltip 
                         content="In Canada, only 50% of capital gains are included in taxable income. This is known as the 'inclusion rate' - meaning if you have $100 in capital gains, only $50 is added to your taxable income and subject to your marginal tax rate."
                         position="right"
