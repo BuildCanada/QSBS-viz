@@ -210,10 +210,10 @@ export function Hero() {
                   How startup exits are taxed in Canada and the USA
                 </p>
                 <p className="text-base font-financier text-gray-800 leading-tight">
-                  The conventional wisdom has always been: "If you want to swing big, go to America—you'll be rewarded." This belief has driven Canada's most ambitious entrepreneurs to leave in droves, chasing the American dream. 
+                  This calculator lets you compare exit scenarios for first-time founders in Canada versus the US.
                   <br />
                   <br />
-                  But is this true? This calculator lets you compare exit scenarios between the countries. The results might surprise you.
+                  The results may surprise you.
                 </p>
               </WaveCard>
 
@@ -346,13 +346,13 @@ export function Hero() {
                     <h3 className="text-sm font-medium text-gray-700 font-mono mb-3">
                       Example Exits
                     </h3>
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                    <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
                       {exampleCompanies.map((company) => {
                         const button = (
                           <button
                             key={company.name}
                             onClick={() => handleExampleClick(company)}
-                            className="p-4 bg-white/50 hover:bg-white/80 border border-gray-200 hover:border-gray-300 rounded-lg transition-all duration-200 hover:shadow-sm group flex items-center justify-center text-center h-20 md:h-auto md:min-h-[80px]"
+                            className="p-4 bg-white/50 hover:bg-white/80 border border-gray-200 hover:border-gray-300 transition-all duration-200 hover:shadow-sm group flex items-center justify-center text-center h-20 lg:min-h-[150px] w-full"
                             style={{ 
                               backgroundColor: 'rgba(255, 255, 255, 0.6)',
                               backdropFilter: 'blur(4px)'
