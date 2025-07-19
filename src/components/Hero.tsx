@@ -58,6 +58,9 @@ export function Hero() {
   const [previousCurrency, setPreviousCurrency] = useState<'USD' | 'CAD'>(() => 
     getFromLocalStorage('qsbs-currency', 'USD')
   )
+  const [isFirstExit, setIsFirstExit] = useState<boolean>(() => 
+    getFromLocalStorage('qsbs-is-first-exit', true)
+  )
 
   const stateTextRef = useRef<HTMLSpanElement>(null)
   const provinceTextRef = useRef<HTMLSpanElement>(null)
@@ -87,6 +90,10 @@ export function Hero() {
   useEffect(() => {
     setToLocalStorage('qsbs-currency', currency);
   }, [currency]);
+
+  useEffect(() => {
+    setToLocalStorage('qsbs-is-first-exit', isFirstExit);
+  }, [isFirstExit]);
 
   // Helper function to safely parse numbers
   const parseNumber = (value: string): number => {
@@ -179,6 +186,64 @@ export function Hero() {
     currency 
   }, selectedState)
   const lcgeResults = calculateLCGE(personalExitValue, personalCostBasis, selectedProvince, currency)
+  
+  // Override LCGE exempt amount if not first exit and recalculate taxes
+  const adjustedLcgeResults = isFirstExit ? lcgeResults : {
+    ...lcgeResults,
+    exemptAmount: 0,
+    taxableAmount: lcgeResults.gain * 0.5, // 50% inclusion rate on full gain
+    federalTax: 0, // Will be recalculated
+    provincialTax: 0, // Will be recalculated
+    totalTax: 0, // Will be recalculated
+    afterTaxAmount: 0 // Will be recalculated
+  }
+  
+  // If not first exit, recalculate taxes with no exemption
+  if (!isFirstExit) {
+    const personalExitValueCad = currency === 'USD' ? personalExitValue * 1.37 : personalExitValue;
+    const gainCad = personalExitValueCad - 0; // cost basis is 0
+    
+    // Apply 50% inclusion rate to full gain (no exemption)
+    const taxableAmountCad = gainCad * 0.5;
+    
+    // Calculate federal and provincial taxes
+    const federalTaxBrackets = [
+      { min: 0, max: 55867, rate: 0.15 },
+      { min: 55867, max: 111733, rate: 0.205 },
+      { min: 111733, max: 173205, rate: 0.26 },
+      { min: 173205, max: 246752, rate: 0.29 },
+      { min: 246752, max: null, rate: 0.33 }
+    ];
+    
+    const calculateProgressiveTax = (income: number, brackets: any[]) => {
+      let tax = 0;
+      let remainingIncome = income;
+      
+      for (const bracket of brackets) {
+        if (remainingIncome <= 0) break;
+        const bracketWidth = (bracket.max || Infinity) - bracket.min;
+        const taxableInBracket = Math.min(remainingIncome, bracketWidth);
+        if (taxableInBracket > 0) {
+          tax += taxableInBracket * bracket.rate;
+          remainingIncome -= taxableInBracket;
+        }
+      }
+      return tax;
+    };
+    
+    const federalTaxCad = calculateProgressiveTax(taxableAmountCad, federalTaxBrackets);
+    const provincialTaxCad = calculateProgressiveTax(taxableAmountCad, PROVINCES[selectedProvince].brackets);
+    const totalTaxCad = federalTaxCad + provincialTaxCad;
+    const afterTaxAmountCad = personalExitValueCad - totalTaxCad;
+    
+    // Convert to display currency
+    const convertAmount = (amount: number) => currency === 'USD' ? amount / 1.37 : amount;
+    
+    adjustedLcgeResults.federalTax = convertAmount(federalTaxCad);
+    adjustedLcgeResults.provincialTax = convertAmount(provincialTaxCad);
+    adjustedLcgeResults.totalTax = convertAmount(totalTaxCad);
+    adjustedLcgeResults.afterTaxAmount = convertAmount(afterTaxAmountCad);
+  }
 
   return (
     <section className="relative overflow-hidden">
@@ -210,10 +275,7 @@ export function Hero() {
                   How startup exits are taxed in Canada and the USA
                 </p>
                 <p className="text-base font-financier text-gray-800 leading-tight">
-                  This calculator lets you compare exit scenarios for first-time founders in Canada versus the US.
-                  <br />
-                  <br />
-                  The results may surprise you.
+                  This calculator lets you compare exit scenarios for first-time founders in Canada versus the US. The results may surprise you.
                 </p>
               </WaveCard>
 
@@ -339,6 +401,20 @@ export function Hero() {
                         color: '#28253B'
                       }}
                     />
+                  </div>
+
+                  <div>
+                    <label className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={isFirstExit}
+                        onChange={(e) => setIsFirstExit(e.target.checked)}
+                        className="w-4 h-4 accent-gray-900"
+                      />
+                      <span className="text-sm font-medium text-gray-700 font-mono">
+                        First Exit?
+                      </span>
+                    </label>
                   </div>
 
                   {/* Example exits section */}
@@ -576,15 +652,15 @@ export function Hero() {
                     <span>Capital Gains:</span>
                     <CurrencyNumber value={lcgeResults.gain} currency={currency} className="text-gray-800" />
                   </div>
-                  <div className="flex justify-between">
-                    <div className="flex items-center gap-1">
-                      <span>LCGE Exempt:</span>
-                      <Tooltip content="Lifetime Capital Gains Exemption (LCGE) allows Canadian residents to exclude up to $1.25 million CAD in capital gains from the sale of qualifying small business corporation shares from taxation over their lifetime.">
-                        <HelpCircle className="w-3 h-3 text-gray-500 hover:text-gray-700 cursor-help transition-colors" />
-                      </Tooltip>
+                                      <div className="flex justify-between">
+                      <div className="flex items-center gap-1">
+                        <span>LCGE Exempt:</span>
+                        <Tooltip content="Lifetime Capital Gains Exemption (LCGE) allows Canadian residents to exclude up to $1.25 million CAD in capital gains from the sale of qualifying small business corporation shares from taxation over their lifetime.">
+                          <HelpCircle className="w-3 h-3 text-gray-500 hover:text-gray-700 cursor-help transition-colors" />
+                        </Tooltip>
+                      </div>
+                      <CurrencyNumber value={adjustedLcgeResults.exemptAmount} currency={currency} className="text-green-600" />
                     </div>
-                    <CurrencyNumber value={lcgeResults.exemptAmount} currency={currency} className="text-green-600" />
-                  </div>
                   <div className="flex justify-between">
                     <div className="flex items-center gap-1">
                       <span>Taxable Gains:</span>
@@ -607,12 +683,12 @@ export function Hero() {
                   </div>
                   <div className="flex justify-between">
                     <span>Total Tax:</span>
-                    <CurrencyNumber value={lcgeResults.totalTax} currency={currency} className="text-red-600" isNegative={true} />
+                    <CurrencyNumber value={adjustedLcgeResults.totalTax} currency={currency} className="text-red-600" isNegative={true} />
                   </div>
                   <hr className="border-gray-300" />
                   <div className="flex justify-between text-lg font-bold">
                     <span>After-Tax Proceeds:</span>
-                    <CurrencyNumber value={lcgeResults.afterTaxAmount} currency={currency} className="text-green-600" />
+                    <CurrencyNumber value={adjustedLcgeResults.afterTaxAmount} currency={currency} className="text-green-600" />
                   </div>
                 </div>
               </div>
@@ -622,7 +698,7 @@ export function Hero() {
             <motion.div 
               className="relative p-6 w-full overflow-hidden"
               style={{ 
-                backgroundColor: qsbsResults.afterTaxProceeds > lcgeResults.afterTaxAmount ? '#EBF4FF' : '#FEF2F2',
+                backgroundColor: qsbsResults.afterTaxProceeds > adjustedLcgeResults.afterTaxAmount ? '#EBF4FF' : '#FEF2F2',
                 boxShadow: '0 4px 16px rgba(0, 0, 0, 0.05)'
               }}
               key="comparison-card"
@@ -632,7 +708,7 @@ export function Hero() {
                 key="comparison-border"
                 className="absolute inset-0 opacity-75"
                 style={{
-                  background: qsbsResults.afterTaxProceeds > lcgeResults.afterTaxAmount ? 
+                  background: qsbsResults.afterTaxProceeds > adjustedLcgeResults.afterTaxAmount ? 
                     'linear-gradient(90deg, transparent, #3B82F6, #06B6D4, #3B82F6, transparent)' :
                     'linear-gradient(90deg, transparent, #DC2626, #EF4444, #DC2626, transparent)',
                   backgroundSize: '200% 100%',
@@ -647,21 +723,21 @@ export function Hero() {
                 }}
               />
               {/* Border mask */}
-              <div 
-                className="absolute inset-[2px]"
-                style={{ 
-                  backgroundColor: qsbsResults.afterTaxProceeds > lcgeResults.afterTaxAmount ? '#EBF4FF' : '#FEF2F2',
-                }}
-              />
+                              <div 
+                  className="absolute inset-[2px]"
+                  style={{ 
+                    backgroundColor: qsbsResults.afterTaxProceeds > adjustedLcgeResults.afterTaxAmount ? '#EBF4FF' : '#FEF2F2',
+                  }}
+                />
               <div className="relative z-10">
                 <h3 className="text-xl font-semibold font-soehne" style={{ color: '#28253B' }}>
                   You would take home{' '}
                   <span 
-                    className={qsbsResults.afterTaxProceeds > lcgeResults.afterTaxAmount ? 'text-blue-600' : 'text-red-600'}
-                    style={{ color: qsbsResults.afterTaxProceeds > lcgeResults.afterTaxAmount ? '#2563eb' : '#dc2626' }}
+                    className={qsbsResults.afterTaxProceeds > adjustedLcgeResults.afterTaxAmount ? 'text-blue-600' : 'text-red-600'}
+                    style={{ color: qsbsResults.afterTaxProceeds > adjustedLcgeResults.afterTaxAmount ? '#2563eb' : '#dc2626' }}
                   >
                     <CurrencyNumber 
-                      value={Math.abs(qsbsResults.afterTaxProceeds - lcgeResults.afterTaxAmount)} 
+                      value={Math.abs(qsbsResults.afterTaxProceeds - adjustedLcgeResults.afterTaxAmount)} 
                       currency={currency} 
                       className="font-semibold"
                       currencyAfter={true}
@@ -670,10 +746,10 @@ export function Hero() {
                   </span>
                   {' '}more in{' '}
                   <span 
-                    className={qsbsResults.afterTaxProceeds > lcgeResults.afterTaxAmount ? 'text-blue-600' : 'text-red-600'}
-                    style={{ color: qsbsResults.afterTaxProceeds > lcgeResults.afterTaxAmount ? '#2563eb' : '#dc2626' }}
+                    className={qsbsResults.afterTaxProceeds > adjustedLcgeResults.afterTaxAmount ? 'text-blue-600' : 'text-red-600'}
+                    style={{ color: qsbsResults.afterTaxProceeds > adjustedLcgeResults.afterTaxAmount ? '#2563eb' : '#dc2626' }}
                   >
-                    {qsbsResults.afterTaxProceeds > lcgeResults.afterTaxAmount ? 
+                    {qsbsResults.afterTaxProceeds > adjustedLcgeResults.afterTaxAmount ? 
                       `${US_STATES[selectedState].name}, USA` : 
                       `${PROVINCES[selectedProvince].name}, Canada`
                     }
