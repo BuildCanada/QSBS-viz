@@ -36,7 +36,8 @@ export const Nav: React.FC = () => {
         <div className="flex items-stretch w-full">
           {/* Brand/Logo */}
           <Link 
-            to="/" 
+            to="https://buildcanada.com" 
+            target="_blank"
             aria-current="page" 
             className="flex items-center transition-opacity hover:opacity-80 p-4"
             style={{
